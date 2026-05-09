@@ -1,0 +1,16 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  title Create Blog
+  link(rel='stylesheet' href='/css/blogform.css')
+.form-container
+  h1 Create a Blog
+  form(action='/blogform' method='post' onsubmit="return confirm('save this blog?')" )
+    .input-group
+      label Title
+      input(type='text' name='title' placeholder='Enter blog title' required='')
+    .input-group
+      label Description
+      textarea(name='description' placeholder='Write your blog description...' required='')
+    button(type='submit') Post Blog

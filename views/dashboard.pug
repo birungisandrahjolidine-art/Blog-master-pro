@@ -1,0 +1,68 @@
+doctype html
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Blog-Master-Pro | Dashboard
+    link(rel='stylesheet' href='css/dashboard.css')
+  body
+    //- --- NAVIGATION BAR ---
+    nav.navbar
+      .nav-container
+        a.nav-logo(href='/dashboard') BlogMasterPro
+        ul.nav-links
+          li
+          if user && user.role !== 'admin'
+            li
+              a(href='/blogform') + New Post
+          li
+            a.logout-link(href='/logout') Logout
+    .container
+      header.dashboard-header
+        h1 Blog Dashboard
+        if user
+          p.welcome-msg Welcome back, 
+            span.user-name #{user.firstname} 
+            span.user-role (#{user.role})
+
+      .top-actions
+        if user && user.role !== 'admin'
+          a.btn.btn-primary(href='/blogform') + Post Blog
+        else if user && user.role === 'admin'
+          span.admin-badge Admin Control Panel
+      table
+        thead
+          tr
+            th Title
+            th Description
+            th Author
+            th Status
+            th Date
+            th Actions
+        tbody
+          each blog in dbBlogs
+            tr 
+              td.blog-title #{blog.title}
+              td #{blog.description}
+              td #{blog.author ? blog.author.firstname + ' ' + blog.author.lastname : 'Unknown'}
+              td
+                if user && user.role === 'admin'
+                  form(action=`/blogs/status/${blog._id}` method="POST")
+                    select(name="status" onchange="this.form.submit()" class="status-select")
+                      option(value="pending" selected=blog.approveStatus === 'pending') Pending
+                      option(value="approved" selected=blog.approveStatus === 'approved') Approved
+                      option(value="rejected" selected=blog.approveStatus === 'rejected') Rejected
+                else
+                  span(class=`status-label ${blog.approveStatus}`) #{blog.approveStatus}
+              td #{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'N/A'}
+              td.actions-cell
+                .btn-group
+                  if user && user.role === 'admin'
+                    a.btn-edit(href=`/blogs/edit/${blog._id}`) Edit
+                  else
+                    a.btn-edit(href="#" onclick="alert('Access denied: You are not an admin'); return false;") Edit
+                  if user && user.role === 'admin'
+                    form(action=`/blogs/delete/${blog._id}` method="POST" onsubmit="return confirm('Are you sure?')")
+                      button.btn-delete(type="submit") Delete
+                  else
+                    button.btn-delete(type="button" onclick="alert('Access denied: You are not an admin')") Delete

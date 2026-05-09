@@ -1,0 +1,101 @@
+/* RESET */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* FORM CONTAINER */
+.form-container{
+    width: 420px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* HEADING */
+.form-container h1{
+    text-align: center;
+    margin-bottom: 25px;
+    color: #1e3c72;
+    font-size: 28px;
+}
+
+/* INPUT GROUP */
+.input-group{
+    margin-bottom: 18px;
+}
+
+/* LABELS */
+.input-group label{
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* INPUTS & TEXTAREA */
+.input-group input,
+.input-group textarea{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    font-size: 15px;
+    transition: 0.3s ease;
+}
+
+/* INPUT FOCUS */
+.input-group input:focus,
+.input-group textarea:focus{
+    border-color: #2a5298;
+    box-shadow: 0 0 5px rgba(42,82,152,0.4);
+}
+
+/* TEXTAREA */
+textarea{
+    height: 120px;
+    resize: none;
+}
+
+/* BUTTON */
+button{
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #2a5298;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* BUTTON HOVER */
+button:hover{
+    background: #1e3c72;
+}
+
+/* RESPONSIVE */
+@media(max-width: 500px){
+
+    .form-container{
+        width: 100%;
+        padding: 20px;
+    }
+
+}

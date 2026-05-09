@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title Edit Blog | Blog-Master-Pro
+    link(rel='stylesheet' href='/css/dashboard.css')
+  body
+    .container
+      h1 Edit  your Blog 
+      form(action=`/blogs/update/${blog._id}` method="post")
+        .form-group
+          label(for="title") Title
+          input#title(type="text" name="title" value=blog.title required)
+        
+        .form-group
+          label(for="description") Description
+          textarea#description(name="description" rows="10" required) #{blog.description}
+        
+        .actions
+          button.btn(type="submit") Save Changes
+          a.btn.logout(href="/dashboard") Cancel
