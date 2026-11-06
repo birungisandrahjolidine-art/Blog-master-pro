@@ -1,12 +1,84 @@
 doctype html
-head
-  meta(charset='UTF-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  title Blog-Master-Pro | Home
-  link(rel='stylesheet' href='css/index.css')
-.container
-  h1 Blog-Master-Pro
-  p Welcome to your trusted  blogging platform
-  .links
-    a.btn(href='/login') Login
-    a.btn(href='/register') Register 
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    meta(name='description' content='Blog-Master-Pro - a simple, elegant place to write and publish your stories.')
+    title Blog-Master-Pro | Home
+    link(rel='stylesheet' href='css/index.css')
+  body
+    header.site-header
+      nav.nav
+        a.brand(href='/index')
+          span.brand-mark B
+          span.brand-text Blog-Master-Pro
+        .nav-links
+          a.nav-link(href='/login') Login
+          a.nav-link.nav-link--primary(href='/register') Get started
+
+    main
+      section.hero
+        p.eyebrow Your stories, beautifully told
+        h1.hero-title
+          | Write. Publish.
+          br
+          span.gradient Share your world.
+        p.hero-copy
+          | Blog-Master-Pro gives you a calm, focused space to draft posts,
+          | manage your library and share ideas with the people who matter.
+        .hero-actions
+          a.btn.btn--primary(href='/register') Create your account
+          a.btn.btn--ghost(href='/login') I already have one
+
+        ul.hero-stats
+          li
+            strong Free
+            span To start
+          li
+            strong 2 hrs
+            span Session security
+          li
+            strong Any device
+            span Fully responsive
+
+      section.features
+        h2.features-title Everything you need to publish with confidence
+        p.features-copy
+          | A focused toolset that keeps the joy in writing and the busywork out of your way.
+        .feature-grid
+          article.card
+            .card-icon
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='M12 20h9')
+                path(d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z')
+            h3 Write freely
+            p
+              | A clean editor for drafting posts without distractions, so your
+              | ideas land on the page first and get polished second.
+          article.card
+            .card-icon
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                rect(x='3' y='4' width='18' height='16' rx='2')
+                path(d='M3 10h18')
+                path(d='M8 4v16')
+            h3 Manage your library
+            p
+              | Review every post from one dashboard, update published stories
+              | and remove what no longer serves your readers.
+          article.card
+            .card-icon
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2')
+                circle(cx='12' cy='7' r='4')
+            h3 Built for every role
+            p
+              | Readers write, authors publish, admins moderate. Everyone gets
+              | the right level of access from the moment they sign in.
+
+    footer.site-footer
+      .footer-inner
+        span © #{new Date().getFullYear()} Blog-Master-Pro
+        .footer-links
+          a(href='/index') Home
+          a(href='/login') Login
+          a(href='/register') Register
