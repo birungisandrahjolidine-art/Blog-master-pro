@@ -5,12 +5,13 @@ html(lang='en')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
     meta(name='description' content='Telesora - a simple, elegant place to write and publish your stories.')
     title Telesora | Home
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
     link(rel='stylesheet' href='css/index.css')
   body
     header.site-header
       nav.nav
         a.brand(href='/index')
-          span.brand-mark T
+          img.brand-logo(src='/images/telesora-logo-sm.png' alt='Telesora logo' width='48' height='32')
           span.brand-text Telesora
         .nav-links
           a.nav-link(href='/login') Login
@@ -18,6 +19,8 @@ html(lang='en')
 
     main
       section.hero
+        .hero-logo
+          img(src='/images/telesora-logo.png' alt='Telesora logo' width='480' height='320')
         p.eyebrow Your stories, beautifully told
         h1.hero-title
           | Write. Publish.

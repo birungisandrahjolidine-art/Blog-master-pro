@@ -69,16 +69,11 @@ a {
     font-weight: 700;
 }
 
-.brand-mark {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #06121c;
-    font-size: 18px;
-    font-weight: 800;
+.brand-logo {
+    display: block;
+    width: auto;
+    height: 36px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45)) brightness(1.12);
 }
 
 .brand-text {
@@ -119,8 +114,34 @@ a {
 .hero {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 96px 24px 72px;
+    padding: 72px 24px 72px;
     text-align: center;
+}
+
+.hero-logo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 28px;
+    width: fit-content;
+}
+
+/* Soft glow behind the logo */
+.hero-logo::before {
+    content: "";
+    position: absolute;
+    inset: -12% -18%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 230, 230, 0.22), rgba(79, 140, 255, 0.12) 55%, transparent 75%);
+    filter: blur(6px);
+}
+
+.hero-logo img {
+    display: block;
+    width: clamp(200px, 34vw, 340px);
+    height: auto;
+    filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.5)) brightness(1.12) saturate(1.06);
 }
 
 .eyebrow {
