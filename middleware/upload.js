@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');
+const { LIMITS } = require('../utils/blogValidation');
 
 const UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads');
-const MAX_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+const MAX_SIZE_BYTES = LIMITS.mediaMaxBytes; // 50 MB, shared with the form
 
 // Mime type => allowed file extensions
 const ALLOWED_TYPES = {
@@ -66,6 +67,12 @@ const uploadMedia = (req, res, next) => {
         return res.status(400).render('blogform', {
             blogs: [],
             user: req.user,
+            limits: LIMITS,
+            values: {
+                title: String(req.body && req.body.title ? req.body.title : '').trim(),
+                description: String(req.body && req.body.description ? req.body.description : '').trim()
+            },
+            errors: {},
             error: message
         });
     });

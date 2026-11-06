@@ -6,64 +6,236 @@ html
     title Create Blog
     link(rel='stylesheet' href='/css/blogform.css')
   body
+    - var formValues = values || { title: '', description: '' }
+    - var fieldErrors = errors || {}
+    - var formLimits = limits || { title: { min: 5, max: 120 }, description: { min: 20, max: 5000 }, mediaMaxBytes: 52428800 }
     .form-container
       a.home-link(href='/index') ← Home
       h1 Create a Blog
       if error
         .alert(role='alert')= error
-      form(action='/blogform' method='post' enctype='multipart/form-data' onsubmit="return confirm('save this blog?')")
+      form#blog-form(action='/blogform' method='post' enctype='multipart/form-data' novalidate='')
         .input-group
-          label Title
-          input(type='text' name='title' placeholder='Enter blog title' required='')
+          label(for='title') Title
+          input#title(type='text' name='title' value=formValues.title placeholder='Enter blog title' required='' autocomplete='off' minlength=formLimits.title.min maxlength=formLimits.title.max aria-describedby='title-error title-count' aria-invalid=(fieldErrors.title ? 'true' : 'false') class=(fieldErrors.title ? 'input-invalid' : ''))
+          .field-meta
+            p#title-error.field-error(role='alert' hidden=!fieldErrors.title)= fieldErrors.title || ''
+            span#title-count.char-count(aria-hidden='true')
         .input-group
-          label Description
-          textarea(name='description' placeholder='Write your blog description...' required='')
+          label(for='description') Description
+          textarea#description(name='description' placeholder='Write your blog description...' rows='6' required='' minlength=formLimits.description.min maxlength=formLimits.description.max aria-describedby='description-error description-count' aria-invalid=(fieldErrors.description ? 'true' : 'false') class=(fieldErrors.description ? 'input-invalid' : ''))= formValues.description
+          .field-meta
+            p#description-error.field-error(role='alert' hidden=!fieldErrors.description)= fieldErrors.description || ''
+            span#description-count.char-count(aria-hidden='true')
         .input-group
           label(for='media') Image or video
           .media-field
-            input#media(type='file' name='media' accept='image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/ogg,video/quicktime')
-            span.media-hint Choose a photo (JPG, PNG, GIF, WEBP) or a video (MP4, WEBM, MOV). Maximum 50 MB.
+            input#media(type='file' name='media' accept='image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/ogg,video/quicktime' aria-describedby='media-hint')
+            span#media-hint.media-hint Choose a photo (JPG, PNG, GIF, WEBP) or a video (MP4, WEBM, MOV). Maximum 50 MB.
           #media-status.media-status(hidden='')
             span.media-status-icon(aria-hidden='true')
-              svg(viewBox='0 0 24 24')
+              svg.media-status-icon-check(viewBox='0 0 24 24')
                 path(d='m5 13 4 4L19 7')
+              svg.media-status-icon-alert(viewBox='0 0 24 24')
+                path(d='M12 7.5v6')
+                path(d='M12 17h.01')
             span#media-status-text.media-status-text(role='status' aria-live='polite')
             button#media-cancel.media-cancel(type='button' aria-label='Remove selected file' title='Remove file')
               svg(viewBox='0 0 24 24' aria-hidden='true')
                 path(d='m6 6 12 12M18 6 6 18')
-        button.submit-btn(type='submit') Post Blog
+        button#submit-btn.submit-btn(type='submit') Post Blog
       script.
         (function () {
+          var LIMITS = !{JSON.stringify(formLimits)};
+          var form = document.getElementById('blog-form');
+          var submitBtn = document.getElementById('submit-btn');
           var input = document.getElementById('media');
           var status = document.getElementById('media-status');
           var statusText = document.getElementById('media-status-text');
           var cancel = document.getElementById('media-cancel');
-          if (!input || !status || !statusText || !cancel) return;
+
+          if (!form || !submitBtn || !input || !status || !statusText || !cancel) return;
+
+          var fields = {
+            title: {
+              input: document.getElementById('title'),
+              error: document.getElementById('title-error'),
+              count: document.getElementById('title-count')
+            },
+            description: {
+              input: document.getElementById('description'),
+              error: document.getElementById('description-error'),
+              count: document.getElementById('description-count')
+            }
+          };
+
+          function titleMessage(value) {
+            var text = value.trim();
+            if (!text.length) return 'Please give your story a title.';
+            if (text.length < LIMITS.title.min) return 'The title needs at least ' + LIMITS.title.min + ' characters.';
+            if (text.length > LIMITS.title.max) return 'The title can be at most ' + LIMITS.title.max + ' characters.';
+            return '';
+          }
+
+          function descriptionMessage(value) {
+            var text = value.trim();
+            if (!text.length) return 'Please write a short description for your story.';
+            if (text.length < LIMITS.description.min) return 'The description needs at least ' + LIMITS.description.min + ' characters.';
+            if (text.length > LIMITS.description.max) return 'The description can be at most ' + LIMITS.description.max + ' characters.';
+            return '';
+          }
+
+          var rules = { title: titleMessage, description: descriptionMessage };
+
+          function setFieldError(name, message) {
+            var field = fields[name];
+            if (!field || !field.input) return;
+
+            if (message) {
+              if (field.error) {
+                field.error.textContent = message;
+                field.error.hidden = false;
+              }
+              field.input.classList.add('input-invalid');
+              field.input.setAttribute('aria-invalid', 'true');
+            } else {
+              if (field.error) {
+                field.error.textContent = '';
+                field.error.hidden = true;
+              }
+              field.input.classList.remove('input-invalid');
+              field.input.setAttribute('aria-invalid', 'false');
+            }
+          }
+
+          function updateCount(name) {
+            var field = fields[name];
+            if (!field || !field.input || !field.count) return;
+            var length = field.input.value.length;
+            field.count.textContent = length + ' / ' + LIMITS[name].max;
+            field.count.classList.toggle('char-count--over', length >= LIMITS[name].max);
+          }
+
+          Object.keys(fields).forEach(function (name) {
+            var field = fields[name];
+            if (!field.input) return;
+
+            updateCount(name);
+
+            field.input.addEventListener('input', function () {
+              updateCount(name);
+              if (field.input.classList.contains('input-invalid')) {
+                setFieldError(name, rules[name](field.input.value));
+              }
+            });
+
+            field.input.addEventListener('blur', function () {
+              if (field.input.value.trim().length) {
+                setFieldError(name, rules[name](field.input.value));
+              }
+            });
+          });
+
+          function formatSize(bytes) {
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+            if (bytes >= 1024) return Math.round(bytes / 1024) + ' KB';
+            return bytes + ' B';
+          }
+
+          var mediaError = '';
+
+          function showStatus(message, isError) {
+            statusText.textContent = message;
+            status.classList.toggle('media-status--error', Boolean(isError));
+            cancel.setAttribute('aria-label', isError ? 'Dismiss message' : 'Remove selected file');
+            cancel.setAttribute('title', isError ? 'Dismiss' : 'Remove file');
+            status.hidden = false;
+          }
 
           function hideStatus() {
             status.hidden = true;
+            status.classList.remove('media-status--error');
             statusText.textContent = '';
+          }
+
+          function allowedTypes() {
+            return (input.accept || '')
+              .split(',')
+              .map(function (type) { return type.trim(); })
+              .filter(Boolean);
+          }
+
+          // Returns true when the chosen file was rejected
+          function validateMedia() {
+            var file = input.files && input.files[0];
+            if (!file) {
+              if (mediaError) { return true; }
+              hideStatus();
+              return false;
+            }
+
+            var types = allowedTypes();
+            if (types.length && types.indexOf(file.type) === -1) {
+              input.value = '';
+              mediaError = 'That file type is not supported. Choose a JPG, PNG, GIF or WEBP photo, or an MP4, WEBM or MOV video.';
+              showStatus(mediaError, true);
+              return true;
+            }
+
+            if (file.size > LIMITS.mediaMaxBytes) {
+              input.value = '';
+              mediaError = 'That file is ' + formatSize(file.size) + '. The maximum size is ' + formatSize(LIMITS.mediaMaxBytes) + '.';
+              showStatus(mediaError, true);
+              return true;
+            }
+
+            mediaError = '';
+            var kind = file.type.indexOf('video/') === 0 ? 'Video' : 'Image';
+            showStatus(kind + ' uploaded: ' + file.name + ' (' + formatSize(file.size) + ')', false);
+            return false;
           }
 
           function clearSelection() {
             input.value = '';
+            mediaError = '';
             hideStatus();
             input.focus();
           }
 
-          input.addEventListener('change', function () {
-            var file = input.files && input.files[0];
-            if (!file) {
-              hideStatus();
+          input.addEventListener('change', validateMedia);
+          cancel.addEventListener('click', clearSelection);
+
+          form.addEventListener('submit', function (event) {
+            var firstInvalid = null;
+            var hasError = false;
+
+            Object.keys(fields).forEach(function (name) {
+              var message = rules[name](fields[name].input.value);
+              setFieldError(name, message);
+              if (message) {
+                hasError = true;
+                if (!firstInvalid) firstInvalid = fields[name].input;
+              }
+            });
+
+            if (validateMedia()) {
+              hasError = true;
+            }
+
+            if (hasError) {
+              event.preventDefault();
+              if (firstInvalid) {
+                firstInvalid.focus();
+              }
               return;
             }
 
-            var kind = file.type.indexOf('video/') === 0 ? 'Video' : 'Image';
-            statusText.textContent = kind + ' uploaded: ' + file.name +
-              ' (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB)';
-            cancel.setAttribute('aria-label', 'Remove ' + file.name);
-            status.hidden = false;
-          });
+            if (!window.confirm('Save this blog?')) {
+              event.preventDefault();
+              return;
+            }
 
-          cancel.addEventListener('click', clearSelection);
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting...';
+          });
         })();

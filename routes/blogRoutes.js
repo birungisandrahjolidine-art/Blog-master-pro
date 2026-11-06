@@ -6,6 +6,7 @@ const Blog = require('../models/blog');
 
 const {isAuthenticated,isAdmin, isUser} = require('../middleware/auth');
 const {uploadMedia, toMediaPayload, removeUpload} = require('../middleware/upload');
+const { LIMITS, validateBlogInput } = require('../utils/blogValidation');
 
 // Rough reading estimate — average adult reads ~200 words per minute
 const readingTime = (text) => {
@@ -51,19 +52,38 @@ router.get('/blogform', isAuthenticated, async (req, res) => {
         const blogs = await Blog.find().populate('author');
         res.render('blogform', {
             blogs,
-            user: req.user
+            user: req.user,
+            limits: LIMITS,
+            values: { title: '', description: '' },
+            errors: {}
         });
     } catch (error) {
         console.log(error);
         res.send('Error loading blogs');
     }
 });
+
 // CREATE BLOG
 router.post('/blogform', isAuthenticated, uploadMedia, async (req, res) => {
+    const { values, errors, valid } = validateBlogInput(req.body);
+
+    // Never keep an attachment for a story that cannot be saved
+    if (!valid) {
+        removeUpload(req.file ? `/uploads/${req.file.filename}` : null);
+        return res.status(422).render('blogform', {
+            blogs: [],
+            user: req.user,
+            limits: LIMITS,
+            values,
+            errors,
+            error: 'Please fix the highlighted fields and try again.'
+        });
+    }
+
     try {
         const newBlog = new Blog({
-            title: req.body.title,
-            description: req.body.description,
+            title: values.title,
+            description: values.description,
             author: req.user._id,
             media: toMediaPayload(req.file)
         });
@@ -75,6 +95,9 @@ router.post('/blogform', isAuthenticated, uploadMedia, async (req, res) => {
         res.status(500).render('blogform', {
             blogs: [],
             user: req.user,
+            limits: LIMITS,
+            values,
+            errors: {},
             error: 'Something went wrong while saving your story. Please try again.'
         });
     }
