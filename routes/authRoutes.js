@@ -41,12 +41,16 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', {
+        error: req.query.error === '1'
+            ? 'That email and password combination did not work. Please try again.'
+            : null
+    });
 });
 
 router.post(
     '/login',
-    passport.authenticate('local', { failureRedirect: '/login' }),
+    passport.authenticate('local', { failureRedirect: '/login?error=1' }),
     (req, res) => {
         if (req.user.role === 'admin') {
             res.redirect('/dashboard');

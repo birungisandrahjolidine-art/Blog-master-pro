@@ -12,6 +12,7 @@ html
         a.nav-logo(href='/dashboard') BlogMasterPro
         ul.nav-links
           li
+            a(href='/index') Home
           if user && user.role !== 'admin'
             li
               a(href='/blogform') + New Post

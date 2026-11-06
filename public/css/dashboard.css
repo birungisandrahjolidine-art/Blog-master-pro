@@ -308,3 +308,17 @@ button {
     background-color: #bdc3c7;
     color: white;
 }
+/* HOME LINK */
+.home-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #00e6e6;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    color: #7ef7f7;
+    text-decoration: underline;
+}

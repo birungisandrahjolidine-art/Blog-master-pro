@@ -5,6 +5,7 @@ html
     link(rel='stylesheet' href='/css/dashboard.css')
   body
     .container
+      a.home-link(href='/index') ← Home
       h1 Edit  your Blog 
       form(action=`/blogs/update/${blog._id}` method="post")
         .form-group
