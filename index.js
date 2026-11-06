@@ -11,7 +11,7 @@ require('dotenv').config();
 const connectDB = require('./config/db')
 
 // import usermodel
-const User = require('./models/User')
+const User = require('./models/user')
 // 2.Instantiations
 const app = express();
 const port = 3000;

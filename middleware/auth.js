@@ -12,14 +12,11 @@ const isUser = (req,res,next) =>{
     }
     res.status(403).send('Access denied:you are not a User')
 }
-//  checs if is admin
+//  checks if is admin
 const isAdmin = (req,res,next) =>{
-    if(req.isAuthenticated() &&req.user.role ==="admin"){
+    if(req.isAuthenticated() &&req.user.role ==="Admin"){
         return next();
     }
     res.status(403).send('Access denied:you are not a admin')
 }
-
-// checks if is salesattendant
-
 module.exports ={isAuthenticated, isAdmin, isUser}
