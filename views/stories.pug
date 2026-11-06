@@ -37,14 +37,21 @@ html(lang='en')
         .story-grid
           each story in stories
             article.story-card
-              .story-top
-                span.story-badge Published
-                time.story-date(datetime=story.date)= story.date
-              h2.story-title= story.title
-              p.story-body= story.description
-              .story-meta
-                span.story-avatar(aria-hidden='true')= story.initials
-                span.story-author= story.authorName
+              if story.mediaUrl
+                .story-media
+                  if story.mediaType === 'video'
+                    video.story-media-el(src=story.mediaUrl controls preload='metadata' playsinline)
+                  else
+                    img.story-media-el(src=story.mediaUrl alt=`Image for ${story.title}` loading='lazy')
+              .story-body-wrap
+                .story-top
+                  span.story-badge Published
+                  time.story-date(datetime=story.date)= story.date
+                h2.story-title= story.title
+                p.story-body= story.description
+                .story-meta
+                  span.story-avatar(aria-hidden='true')= story.initials
+                  span.story-author= story.authorName
       else
         .stories-empty
           .card-icon

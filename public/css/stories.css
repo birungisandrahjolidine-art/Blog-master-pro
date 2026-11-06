@@ -56,7 +56,28 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    overflow: hidden;
     transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.story-media {
+    margin: -26px -26px 18px;
+    background: #0b1220;
+}
+
+.story-media-el {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #0b1220;
+}
+
+.story-body-wrap {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .story-card:hover {

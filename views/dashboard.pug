@@ -36,6 +36,7 @@ html
         thead
           tr
             th Title
+            th Media
             th Description
             th Author
             th Status
@@ -45,6 +46,15 @@ html
           each blog in dbBlogs
             tr 
               td.blog-title #{blog.title}
+              td
+                if blog.media && blog.media.url
+                  if blog.media.type === 'video'
+                    a.dash-media-link(href=blog.media.url target='_blank' rel='noopener') Video
+                  else
+                    a.dash-media-link(href=blog.media.url target='_blank' rel='noopener')
+                      img.dash-thumb(src=blog.media.url alt='')
+                else
+                  span.dash-media-none —
               td #{blog.description}
               td #{blog.author ? blog.author.firstname + ' ' + blog.author.lastname : 'Unknown'}
               td

@@ -1,16 +1,64 @@
 doctype html
-head
-  meta(charset='UTF-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  title Create Blog
-  link(rel='stylesheet' href='/css/blogform.css')
-.form-container
-  h1 Create a Blog
-  form(action='/blogform' method='post' onsubmit="return confirm('save this blog?')" )
-    .input-group
-      label Title
-      input(type='text' name='title' placeholder='Enter blog title' required='')
-    .input-group
-      label Description
-      textarea(name='description' placeholder='Write your blog description...' required='')
-    button(type='submit') Post Blog
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title Create Blog
+    link(rel='stylesheet' href='/css/blogform.css')
+  body
+    .form-container
+      h1 Create a Blog
+      if error
+        .alert(role='alert')= error
+      form(action='/blogform' method='post' enctype='multipart/form-data' onsubmit="return confirm('save this blog?')")
+        .input-group
+          label Title
+          input(type='text' name='title' placeholder='Enter blog title' required='')
+        .input-group
+          label Description
+          textarea(name='description' placeholder='Write your blog description...' required='')
+        .input-group
+          label(for='media') Image or video
+          .media-field
+            input#media(type='file' name='media' accept='image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/ogg,video/quicktime')
+            span.media-hint Choose a photo (JPG, PNG, GIF, WEBP) or a video (MP4, WEBM, MOV). Maximum 50 MB.
+          #media-preview.media-preview(hidden='')
+        button(type='submit') Post Blog
+      script.
+        (function () {
+          var input = document.getElementById('media');
+          var preview = document.getElementById('media-preview');
+          if (!input || !preview) return;
+
+          input.addEventListener('change', function () {
+            preview.innerHTML = '';
+            var file = input.files && input.files[0];
+            if (!file) {
+              preview.hidden = true;
+              return;
+            }
+
+            var isVideo = file.type.indexOf('video/') === 0;
+            var node;
+
+            if (isVideo) {
+              node = document.createElement('video');
+              node.controls = true;
+              node.preload = 'metadata';
+            } else {
+              node = document.createElement('img');
+              node.alt = 'Selected image preview';
+            }
+
+            node.src = URL.createObjectURL(file);
+            node.className = 'preview-media';
+
+            var name = document.createElement('p');
+            name.className = 'preview-name';
+            name.textContent = file.name + ' · ' + (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+
+            preview.appendChild(node);
+            preview.appendChild(name);
+            preview.hidden = false;
+          });
+        })();

@@ -14,6 +14,14 @@ html
         .form-group
           label(for="description") Description
           textarea#description(name="description" rows="10" required) #{blog.description}
+
+        if blog.media && blog.media.url
+          .form-group
+            label Attached media
+            if blog.media.type === 'video'
+              video.edit-media(src=blog.media.url controls preload='metadata')
+            else
+              img.edit-media(src=blog.media.url alt='Attached image')
         
         .actions
           button.btn(type="submit") Save Changes

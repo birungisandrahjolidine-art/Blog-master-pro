@@ -4,6 +4,7 @@ const router = express.Router();
 const Blog = require('../models/blog');
 
 const {isAuthenticated,isAdmin, isUser} = require('../middleware/auth');
+const {uploadMedia, toMediaPayload, removeUpload} = require('../middleware/upload');
 
 
 // VIEW BLOGS
@@ -20,18 +21,24 @@ router.get('/blogform', isAuthenticated, async (req, res) => {
     }
 });
 // CREATE BLOG
-router.post('/blogform', isAuthenticated, async (req, res) => {
+router.post('/blogform', isAuthenticated, uploadMedia, async (req, res) => {
     try {
         const newBlog = new Blog({
             title: req.body.title,
             description: req.body.description,
-            author: req.user._id
+            author: req.user._id,
+            media: toMediaPayload(req.file)
         });
         await newBlog.save();
         res.redirect('/dashboard');
     } catch (error) {
         console.log(error);
-        res.send('Error creating blog');
+        removeUpload(req.file ? `/uploads/${req.file.filename}` : null);
+        res.status(500).render('blogform', {
+            blogs: [],
+            user: req.user,
+            error: 'Something went wrong while saving your story. Please try again.'
+        });
     }
 });
 // PUBLIC STORIES (approved only)
@@ -54,7 +61,9 @@ router.get('/stories', async (req, res) => {
                 initials: (firstname.charAt(0) + lastname.charAt(0)).toUpperCase() || 'A',
                 date: blog.createdAt
                     ? blog.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                    : ''
+                    : '',
+                mediaUrl: blog.media && blog.media.url ? blog.media.url : null,
+                mediaType: blog.media && blog.media.type ? blog.media.type : null
             };
         });
 
@@ -94,7 +103,10 @@ router.post('/blogs/update/:id', isAuthenticated, async (req, res) => {
 // DELETE BLOG
 router.post('/blogs/delete/:id', isAuthenticated, async (req, res) => {
     try {
-        await Blog.findByIdAndDelete(req.params.id);
+        const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+        if (deletedBlog && deletedBlog.media) {
+            removeUpload(deletedBlog.media.url);
+        }
         res.redirect('/dashboard');
     } catch (error) {
         console.log(error);
