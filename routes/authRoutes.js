@@ -52,10 +52,8 @@ router.post(
     '/login',
     passport.authenticate('local', { failureRedirect: '/login?error=1' }),
     (req, res) => {
-        if (req.user.role === 'admin') {
+        if (req.user.role === 'admin' || req.user.role === 'user') {
             res.redirect('/dashboard');
-        } else if (req.user.role === 'user') {
-            res.redirect('/blogform');
         } else {
             res.redirect('/index');
         }

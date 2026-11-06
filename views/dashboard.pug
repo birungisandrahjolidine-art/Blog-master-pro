@@ -37,7 +37,7 @@ html(lang='en')
         if user && user.role === 'admin'
           a.btn.btn-primary(href='/stories') View published stories
         else
-          a.btn.btn-primary(href='/blogform') + Write a story
+          a.btn.btn-primary(href='/blogform') + Post a blog
 
       if error
         p.alert(role='alert')= error
