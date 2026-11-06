@@ -162,16 +162,37 @@ html(lang='en')
               h2#submissions-heading Your submissions
             span.section-count= dbBlogs.length
           if dbBlogs.length
-            .reviewed-list
+            .story-grid
               each blog in dbBlogs
-                article.reviewed-card
-                  .reviewed-main
-                    span.status-label(class=blog.approveStatus)= blog.approveStatus
-                    div
-                      h3.story-title= blog.title
-                      p.reviewed-by= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'
-                  if blog.approveStatus === 'rejected'
-                    a.btn-text(href='/blogform') Submit a new story
+                article.story-card
+                  if blog.media && blog.media.url && blog.media.type !== 'video'
+                    .story-cover
+                      img(src=blog.media.url alt='')
+                  else
+                    .story-cover.story-cover--empty
+                      if blog.media && blog.media.type === 'video'
+                        span.media-chip Video attached
+                      else
+                        span.cover-mark T
+                  .story-content
+                    .story-meta
+                      span.status-label(class=blog.approveStatus)= blog.approveStatus === 'pending' ? 'Pending review' : blog.approveStatus
+                      time(datetime=blog.createdAt ? blog.createdAt.toISOString() : '')= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'
+                    h3.story-title= blog.title
+                    p.story-description= blog.description
+                    .author-line
+                      span.author-avatar= blog.author ? (blog.author.firstname || 'A').charAt(0).toUpperCase() : 'A'
+                      span
+                        small Submitted by
+                        strong= blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'
+                    .card-actions
+                      if blog.approveStatus === 'approved'
+                        a.btn.btn-review(href=`/stories/${blog._id}`) Read story
+                        a.btn-text(href=`/blogs/edit/${blog._id}`) Edit story
+                      else
+                        a.btn.btn-review(href=`/blogs/edit/${blog._id}`) Edit story
+                        form.delete-form(action=`/blogs/delete/${blog._id}` method='POST' onsubmit="return confirm('Delete this story? This cannot be undone.')")
+                          button.btn-delete(type='submit' aria-label=`Delete ${blog.title}`) Delete
           else
             .empty-state
               span.empty-icon

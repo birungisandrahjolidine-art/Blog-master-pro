@@ -13,6 +13,13 @@ const readingTime = (text) => {
     return `${Math.max(1, Math.ceil(words / 200))} min read`;
 };
 
+// Admins can manage every story; authors can manage their own
+const canManageBlog = (blog, user) => {
+    if (!blog || !user) return false;
+    if (user.role === 'admin') return true;
+    return Boolean(blog.author) && blog.author.toString() === user._id.toString();
+};
+
 // Shapes a blog document into the plain object the story views use
 const toStoryView = (blog) => {
     const firstname = (blog.author && blog.author.firstname) || '';
@@ -155,11 +162,19 @@ router.get('/dashboard', isAuthenticated, async (req, res) => {
 router.post('/blogs/update/:id', isAuthenticated, async (req, res) => {
     try {
         const { title, description } = req.body;
-        await Blog.findByIdAndUpdate(req.params.id, {
-            title: title,
-            description: description
-        });
-        res.redirect('/dashboard'); 
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) return res.status(404).send('Blog entry not found');
+        if (!canManageBlog(blog, req.user)) {
+            return res.status(403).send('Access denied: you can only edit your own stories');
+        }
+        blog.title = title;
+        blog.description = description;
+        // A rejected story goes back into the review queue when its author revises it
+        if (req.user.role !== 'admin' && blog.approveStatus === 'rejected') {
+            blog.approveStatus = 'pending';
+        }
+        await blog.save();
+        res.redirect('/dashboard');
     } catch (error) {
         console.error(error);
         res.status(500).send("Update failed");
@@ -168,9 +183,14 @@ router.post('/blogs/update/:id', isAuthenticated, async (req, res) => {
 // DELETE BLOG
 router.post('/blogs/delete/:id', isAuthenticated, async (req, res) => {
     try {
-        const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
-        if (deletedBlog && deletedBlog.media) {
-            removeUpload(deletedBlog.media.url);
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) return res.status(404).send('Blog entry not found');
+        if (!canManageBlog(blog, req.user)) {
+            return res.status(403).send('Access denied: you can only delete your own stories');
+        }
+        await blog.deleteOne();
+        if (blog.media) {
+            removeUpload(blog.media.url);
         }
         res.redirect('/dashboard');
     } catch (error) {
@@ -179,11 +199,14 @@ router.post('/blogs/delete/:id', isAuthenticated, async (req, res) => {
     }
 });
 // A. GET the Edit Page
-router.get('/blogs/edit/:id', isAdmin, async (req, res) => {
+router.get('/blogs/edit/:id', isAuthenticated, async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id);
-        if (!blog) return res.status(404).send('Blog entry not found')
-        res.render('editBlog', { blog, user: req.user });
+        if (!blog) return res.status(404).send('Blog entry not found');
+        if (!canManageBlog(blog, req.user)) {
+            return res.status(403).send('Access denied: you can only edit your own stories');
+        }
+        res.render('editblog', { blog, user: req.user });
     } catch (error) {
         console.log(error);
         res.send('Error loading edit form');
