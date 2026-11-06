@@ -155,20 +155,45 @@ textarea{
 /* BUTTON */
 button{
     width: 100%;
-    padding: 12px;
+    min-height: 52px;
+    margin-top: 10px;
+    padding: 16px 28px;
     border: none;
-    border-radius: 6px;
-    background: #2a5298;
-    color: white;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    box-shadow: 0 8px 18px rgba(30, 60, 114, 0.28);
+    color: #ffffff;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 /* BUTTON HOVER */
 button:hover{
-    background: #1e3c72;
+    background: linear-gradient(135deg, #3560ad, #24447f);
+    box-shadow: 0 12px 24px rgba(30, 60, 114, 0.34);
+    transform: translateY(-1px);
+}
+
+/* BUTTON PRESSED */
+button:active{
+    box-shadow: 0 6px 14px rgba(30, 60, 114, 0.28);
+    transform: translateY(0);
+}
+
+/* BUTTON FOCUS */
+button:focus-visible{
+    outline: 3px solid rgba(42, 82, 152, 0.4);
+    outline-offset: 3px;
+}
+
+@media (max-width: 500px){
+    button{
+        padding: 14px 20px;
+        font-size: 15px;
+    }
 }
 
 /* RESPONSIVE */
@@ -180,17 +205,32 @@ button:hover{
     }
 
 }
-/* HOME LINK */
+/* HOME BUTTON */
 .home-link {
-    display: inline-block;
-    margin-bottom: 14px;
-    font-size: 13px;
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    margin-bottom: 18px;
+    padding: 9px 18px;
+    border: 1px solid #cfdcec;
+    border-radius: 999px;
+    background: #f1f6fc;
     color: #2a5298;
+    font-size: 13px;
+    font-weight: 700;
     text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.18s ease;
 }
 
 .home-link:hover {
+    border-color: #2a5298;
+    background: #e5eefa;
     color: #1e3c72;
-    text-decoration: underline;
+    transform: translateY(-1px);
+}
+
+.home-link:focus-visible {
+    outline: 3px solid rgba(42, 82, 152, 0.4);
+    outline-offset: 3px;
 }
