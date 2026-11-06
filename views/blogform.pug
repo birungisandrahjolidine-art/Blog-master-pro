@@ -23,43 +23,47 @@ html
           .media-field
             input#media(type='file' name='media' accept='image/jpeg,image/png,image/gif,image/webp,image/avif,video/mp4,video/webm,video/ogg,video/quicktime')
             span.media-hint Choose a photo (JPG, PNG, GIF, WEBP) or a video (MP4, WEBM, MOV). Maximum 50 MB.
-          #media-preview.media-preview(hidden='')
-        button(type='submit') Post Blog
+          #media-status.media-status(hidden='')
+            span.media-status-icon(aria-hidden='true')
+              svg(viewBox='0 0 24 24')
+                path(d='m5 13 4 4L19 7')
+            span#media-status-text.media-status-text(role='status' aria-live='polite')
+            button#media-cancel.media-cancel(type='button' aria-label='Remove selected file' title='Remove file')
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='m6 6 12 12M18 6 6 18')
+        button.submit-btn(type='submit') Post Blog
       script.
         (function () {
           var input = document.getElementById('media');
-          var preview = document.getElementById('media-preview');
-          if (!input || !preview) return;
+          var status = document.getElementById('media-status');
+          var statusText = document.getElementById('media-status-text');
+          var cancel = document.getElementById('media-cancel');
+          if (!input || !status || !statusText || !cancel) return;
+
+          function hideStatus() {
+            status.hidden = true;
+            statusText.textContent = '';
+          }
+
+          function clearSelection() {
+            input.value = '';
+            hideStatus();
+            input.focus();
+          }
 
           input.addEventListener('change', function () {
-            preview.innerHTML = '';
             var file = input.files && input.files[0];
             if (!file) {
-              preview.hidden = true;
+              hideStatus();
               return;
             }
 
-            var isVideo = file.type.indexOf('video/') === 0;
-            var node;
-
-            if (isVideo) {
-              node = document.createElement('video');
-              node.controls = true;
-              node.preload = 'metadata';
-            } else {
-              node = document.createElement('img');
-              node.alt = 'Selected image preview';
-            }
-
-            node.src = URL.createObjectURL(file);
-            node.className = 'preview-media';
-
-            var name = document.createElement('p');
-            name.className = 'preview-name';
-            name.textContent = file.name + ' · ' + (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-
-            preview.appendChild(node);
-            preview.appendChild(name);
-            preview.hidden = false;
+            var kind = file.type.indexOf('video/') === 0 ? 'Video' : 'Image';
+            statusText.textContent = kind + ' uploaded: ' + file.name +
+              ' (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB)';
+            cancel.setAttribute('aria-label', 'Remove ' + file.name);
+            status.hidden = false;
           });
+
+          cancel.addEventListener('click', clearSelection);
         })();
