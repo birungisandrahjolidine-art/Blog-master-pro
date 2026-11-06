@@ -1,0 +1,67 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    meta(name='description' content='Read the latest approved stories published on Telesora.')
+    title Telesora | Stories
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    link(rel='stylesheet' href='/css/index.css')
+    link(rel='stylesheet' href='/css/stories.css')
+  body
+    header.site-header
+      nav.nav
+        a.brand(href='/index')
+          img.brand-logo(src='/images/telesora-logo-sm.png' alt='Telesora logo' width='48' height='32')
+          span.brand-text Telesora
+        .nav-links
+          a.nav-link.nav-link--active(href='/stories') Stories
+          if user
+            a.nav-link(href='/dashboard') Dashboard
+          else
+            a.nav-link(href='/login') Login
+          a.nav-link.nav-link--primary(href='/register') Get started
+
+    main.stories-page
+      section.stories-head
+        p.eyebrow Published on Telesora
+        h1.stories-title
+          | Stories from our
+          span.gradient  writers
+        p.stories-copy
+          | Every story below was reviewed and approved by a Telesora editor
+          | before it appeared here.
+
+      if stories.length
+        p.stories-count #{stories.length} published #{stories.length === 1 ? 'story' : 'stories'}
+        .story-grid
+          each story in stories
+            article.story-card
+              .story-top
+                span.story-badge Published
+                time.story-date(datetime=story.date)= story.date
+              h2.story-title= story.title
+              p.story-body= story.description
+              .story-meta
+                span.story-avatar(aria-hidden='true')= story.initials
+                span.story-author= story.authorName
+      else
+        .stories-empty
+          .card-icon
+            svg(viewBox='0 0 24 24' aria-hidden='true')
+              path(d='M12 20h9')
+              path(d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z')
+          h2 No stories published yet
+          p
+            | Approved stories will appear here. Be the first writer to
+            | get one published.
+          a.btn.btn--primary(href='/register') Start writing
+
+    footer.site-footer
+      .footer-inner
+        span © #{new Date().getFullYear()} Telesora
+        .footer-links
+          a(href='/index') Home
+          a(href='/stories') Stories
+          a(href='/login') Login
+          a(href='/register') Register

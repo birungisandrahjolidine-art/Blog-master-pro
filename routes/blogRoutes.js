@@ -34,6 +34,37 @@ router.post('/blogform', isAuthenticated, async (req, res) => {
         res.send('Error creating blog');
     }
 });
+// PUBLIC STORIES (approved only)
+router.get('/stories', async (req, res) => {
+    try {
+        const dbStories = await Blog.find({ approveStatus: 'approved' })
+            .populate('author', 'firstname lastname')
+            .sort({ createdAt: -1 });
+
+        const stories = dbStories.map((blog) => {
+            const firstname = (blog.author && blog.author.firstname) || '';
+            const lastname = (blog.author && blog.author.lastname) || '';
+            const authorName = `${firstname} ${lastname}`.trim() || 'Anonymous';
+
+            return {
+                id: blog._id.toString(),
+                title: blog.title,
+                description: blog.description,
+                authorName,
+                initials: (firstname.charAt(0) + lastname.charAt(0)).toUpperCase() || 'A',
+                date: blog.createdAt
+                    ? blog.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : ''
+            };
+        });
+
+        res.render('stories', { stories });
+    } catch (error) {
+        console.log(error);
+        res.render('stories', { stories: [] });
+    }
+});
+
 router.get("/dashboard", async (req, res) => {
   try {
     const dbBlogs = await Blog.find()

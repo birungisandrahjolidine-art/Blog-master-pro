@@ -1,0 +1,170 @@
+/* Stories page — builds on the tokens and shell from index.css */
+
+.nav-link--active {
+    color: var(--text);
+    background: rgba(0, 230, 230, 0.12);
+}
+
+.stories-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: clamp(28px, 5vh, 56px) 24px clamp(56px, 9vh, 96px);
+}
+
+.stories-head {
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.stories-title {
+    font-size: clamp(1.7rem, 3.8vw, 2.7rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+}
+
+.stories-title .gradient {
+    margin-left: 0.35ch;
+}
+
+.stories-copy {
+    margin-top: 14px;
+    font-size: clamp(0.9rem, 1.3vw, 1rem);
+    color: var(--muted);
+}
+
+.stories-count {
+    margin: 40px 0 16px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.story-card {
+    display: flex;
+    flex-direction: column;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.story-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 230, 230, 0.35);
+}
+
+.story-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.story-badge {
+    padding: 3px 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(0, 230, 230, 0.1);
+    border: 1px solid rgba(0, 230, 230, 0.28);
+    border-radius: 999px;
+}
+
+.story-date {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.story-title {
+    font-size: 1.15rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.story-body {
+    flex: 1;
+    font-size: 14.5px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+.story-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.story-avatar {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #06121c;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+
+.story-author {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stories-empty {
+    max-width: 460px;
+    margin: 48px auto 0;
+    padding: 40px 28px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.stories-empty .card-icon {
+    margin: 0 auto 18px;
+}
+
+.stories-empty h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.stories-empty p {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin-bottom: 22px;
+}
+
+@media (max-width: 600px) {
+    .stories-page {
+        padding: 28px 20px 64px;
+    }
+
+    .story-grid {
+        grid-template-columns: 1fr;
+    }
+}
