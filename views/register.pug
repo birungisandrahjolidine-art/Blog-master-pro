@@ -1,33 +1,108 @@
 doctype html
-head
-  meta(charset='UTF-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  title Blog-master-pro 
-  link(rel='stylesheet' href='/css/register.css')
-.container
-  a.home-link(href='/index') ← Home
-  h1 Blog-master-pro register page
-  form(action='/register' method='post')
-    .input-group
-      label First Name
-      input(type='text' name='firstname' placeholder='Enter first name' required='')
-    .input-group
-      label Last Name
-      input(type='text' name='lastname' placeholder='Enter last name' required='')
-    .input-group
-      label Email
-      input(type='email' name='email' placeholder='Enter email' required='')
-    .input-group
-      label Password
-      input(type='password' name='password' placeholder='Enter password' required='')
-    .input-group
-      label Select Role
-      select(name='role' required='')
-        option(value='admin')
-          | Admin
-        option(value='user')
-          | User
-    button.btn(type='submit')
-      | register
-  
-    
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    meta(name='description' content='Create your Telesora account to start writing and publishing your stories.')
+    title Telesora | Create account
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    link(rel='stylesheet' href='/css/register.css')
+  body.register-body
+    main.register-shell
+      aside.register-aside
+        a.brand(href='/index')
+          img.brand-logo(src='/images/telesora-logo-sm.png' alt='Telesora logo' width='48' height='32')
+          span.brand-text Telesora
+        .aside-body
+          p.eyebrow Get started free
+          h2.aside-title
+            | Your first story
+            br
+            span.gradient starts here.
+          p.aside-copy
+            | Create one account to draft, publish and manage every post
+            | you write — no credit card, no setup.
+          ul.aside-list
+            li
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='M20 6 9 17l-5-5')
+              span Free to start, no limits on drafts
+            li
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='M20 6 9 17l-5-5')
+              span Upload images and video to your posts
+            li
+              svg(viewBox='0 0 24 24' aria-hidden='true')
+                path(d='M20 6 9 17l-5-5')
+              span Your stories, beautifully published
+        p.aside-foot © #{new Date().getFullYear()} Telesora
+
+      section.register-main
+        .main-top
+          a.home-link(href='/index')
+            svg(viewBox='0 0 24 24' aria-hidden='true')
+              path(d='M19 12H5')
+              path(d='m12 19-7-7 7-7')
+            span Back to home
+        h1.form-title Create your account
+        p.form-sub Join Telesora and start sharing your stories.
+        if error
+          p.alert(role='alert')= error
+
+        form.register-form(action='/register' method='post')
+          .field-row
+            .field
+              label(for='firstname') First name
+              .control
+                input#firstname(type='text' name='firstname' placeholder='Jane' autocomplete='given-name' required='')
+            .field
+              label(for='lastname') Last name
+              .control
+                input#lastname(type='text' name='lastname' placeholder='Doe' autocomplete='family-name' required='')
+          .field
+            label(for='email') Email address
+            .control
+              span.control-icon
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  rect(x='3' y='5' width='18' height='14' rx='2')
+                  path(d='m3 7 9 6 9-6')
+              input#email(type='email' name='email' placeholder='you@example.com' autocomplete='email' required='')
+          .field
+            label(for='password') Password
+            .control
+              span.control-icon
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  rect(x='3' y='11' width='18' height='10' rx='2')
+                  path(d='M7 11V7a5 5 0 0 1 10 0v4')
+              input#password(type='password' name='password' placeholder='Create a password' autocomplete='new-password' minlength='6' required='')
+              button.toggle(type='button' data-target='password' aria-label='Show password') Show
+            p.hint At least 6 characters.
+          .field
+            label(for='role') Account type
+            .control
+              span.control-icon
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  path(d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2')
+                  circle(cx='12' cy='7' r='4')
+              select#role(name='role' required='')
+                option(value='user' selected) Writer — publish my own posts
+                option(value='admin') Admin — moderate all posts
+              span.chevron
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  path(d='m6 9 6 6 6-6')
+          button.btn.btn--primary(type='submit') Create account
+
+        p.form-foot
+          | Already have an account?
+          a(href='/login') Sign in
+
+    script.
+      document.querySelectorAll('.toggle').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var input = document.getElementById(button.dataset.target);
+          var revealed = input.type === 'text';
+          input.type = revealed ? 'password' : 'text';
+          button.textContent = revealed ? 'Show' : 'Hide';
+          button.setAttribute('aria-label', revealed ? 'Show password' : 'Hide password');
+        });
+      });

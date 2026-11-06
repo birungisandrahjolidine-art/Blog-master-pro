@@ -30,8 +30,8 @@ router.post('/register', async (req, res) => {
             email: email.toLowerCase(),
             role
         });
-        await User.register(newUser, password); 
-        res.redirect('/register');
+        await User.register(newUser, password);
+        res.redirect('/login');
     } catch (error) {
         console.log(error);
         res.render('register', {
