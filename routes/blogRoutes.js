@@ -111,17 +111,45 @@ router.get('/stories/:id', async (req, res) => {
     }
 });
 
-router.get("/dashboard", async (req, res) => {
-  try {
-    const dbBlogs = await Blog.find()
-      .populate('author', 'firstname lastname')
-      .sort({ date: -1 });
+router.get('/dashboard', isAuthenticated, async (req, res) => {
+    const isAdminUser = req.user.role === 'admin';
+    const emptyDashboard = {
+        user: req.user,
+        dbBlogs: [],
+        pendingBlogs: [],
+        reviewedBlogs: [],
+        stats: { pending: 0, approved: 0, rejected: 0 }
+    };
 
-    res.render("dashboard", { dbBlogs }); 
-  } catch (error) {
-    console.error(error);
-    res.render("dashboard", { dbBlogs: [] }); 
-  }
+    try {
+        const dbBlogs = await Blog.find(isAdminUser ? {} : { author: req.user._id })
+            .populate('author', 'firstname lastname')
+            .sort({ createdAt: -1 });
+        const stats = dbBlogs.reduce((counts, blog) => {
+            if (Object.prototype.hasOwnProperty.call(counts, blog.approveStatus)) {
+                counts[blog.approveStatus] += 1;
+            }
+            return counts;
+        }, { pending: 0, approved: 0, rejected: 0 });
+
+        res.render('dashboard', {
+            user: req.user,
+            dbBlogs,
+            pendingBlogs: isAdminUser
+                ? dbBlogs.filter(blog => blog.approveStatus === 'pending')
+                : [],
+            reviewedBlogs: isAdminUser
+                ? dbBlogs.filter(blog => blog.approveStatus !== 'pending')
+                : [],
+            stats
+        });
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        res.status(500).render('dashboard', {
+            ...emptyDashboard,
+            error: 'We could not load your stories. Please refresh and try again.'
+        });
+    }
 });
 
 router.post('/blogs/update/:id', isAuthenticated, async (req, res) => {

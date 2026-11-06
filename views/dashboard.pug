@@ -1,81 +1,160 @@
 doctype html
-html
+html(lang='en')
   head
     meta(charset='UTF-8')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title Blog-Master-Pro | Dashboard
-    link(rel='stylesheet' href='css/dashboard.css')
-  body
-    //- --- NAVIGATION BAR ---
+    meta(name='description' content='Review story submissions and track their approval status on Telesora.')
+    title Telesora | #{user && user.role === 'admin' ? 'Review submissions' : 'Your stories'}
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    link(rel='stylesheet' href='/css/dashboard.css')
+  body.dashboard-body
     nav.navbar
       .nav-container
-        a.nav-logo(href='/dashboard') BlogMasterPro
+        a.nav-logo(href='/index')
+          img(src='/images/telesora-logo-sm.png' alt='' width='38' height='26')
+          span Telesora
         ul.nav-links
           li
             a(href='/index') Home
-          if user && user.role !== 'admin'
-            li
-              a(href='/blogform') + New Post
           li
             a(href='/stories') Stories
+          if user && user.role !== 'admin'
+            li
+              a.nav-new(href='/blogform') + New story
           li
-            a.logout-link(href='/logout') Logout
-    .container
-      header.dashboard-header
-        h1 Blog Dashboard
-        if user
-          p.welcome-msg Welcome back, 
-            span.user-name #{user.firstname} 
-            span.user-role (#{user.role})
+            a.logout-link(href='/logout') Log out
 
-      .top-actions
-        if user && user.role !== 'admin'
-          a.btn.btn-primary(href='/blogform') + Post Blog
-        else if user && user.role === 'admin'
-          span.admin-badge Admin Control Panel
-      table
-        thead
-          tr
-            th Title
-            th Media
-            th Description
-            th Author
-            th Status
-            th Date
-            th Actions
-        tbody
-          each blog in dbBlogs
-            tr 
-              td.blog-title #{blog.title}
-              td
-                if blog.media && blog.media.url
-                  if blog.media.type === 'video'
-                    a.dash-media-link(href=blog.media.url target='_blank' rel='noopener') Video
+    main.dashboard
+      header.dashboard-header
+        .heading-copy
+          p.eyebrow= user && user.role === 'admin' ? 'CONTENT MODERATION' : 'YOUR WRITING SPACE'
+          h1= user && user.role === 'admin' ? 'Review submissions' : 'Your stories'
+          p.welcome-msg
+            if user && user.role === 'admin'
+              | Keep the community thoughtful. Review new stories before they go live.
+            else
+              | Track your stories and see when they are ready to be published.
+        if user && user.role === 'admin'
+          a.btn.btn-primary(href='/stories') View published stories
+        else
+          a.btn.btn-primary(href='/blogform') + Write a story
+
+      if error
+        p.alert(role='alert')= error
+
+      section.stats-grid(aria-label='Submission totals')
+        article.stat-card.stat-pending
+          span.stat-label Awaiting review
+          strong.stat-number= stats.pending
+          span.stat-note= user && user.role === 'admin' ? 'Stories need your attention' : 'Stories being reviewed'
+        article.stat-card.stat-approved
+          span.stat-label Approved
+          strong.stat-number= stats.approved
+          span.stat-note Published for readers
+        article.stat-card.stat-rejected
+          span.stat-label Needs changes
+          strong.stat-number= stats.rejected
+          span.stat-note= user && user.role === 'admin' ? 'Not approved' : 'Review your story'
+
+      if user && user.role === 'admin'
+        section.story-section(aria-labelledby='pending-heading')
+          .section-heading
+            div
+              p.section-kicker MODERATION QUEUE
+              h2#pending-heading Waiting for your review
+            span.section-count= pendingBlogs.length
+          if pendingBlogs.length
+            .story-grid
+              each blog in pendingBlogs
+                article.story-card
+                  if blog.media && blog.media.url && blog.media.type !== 'video'
+                    .story-cover
+                      img(src=blog.media.url alt='')
                   else
-                    a.dash-media-link(href=blog.media.url target='_blank' rel='noopener')
-                      img.dash-thumb(src=blog.media.url alt='')
-                else
-                  span.dash-media-none —
-              td #{blog.description}
-              td #{blog.author ? blog.author.firstname + ' ' + blog.author.lastname : 'Unknown'}
-              td
-                if user && user.role === 'admin'
-                  form(action=`/blogs/status/${blog._id}` method="POST")
-                    select(name="status" onchange="this.form.submit()" class="status-select")
-                      option(value="pending" selected=blog.approveStatus === 'pending') Pending
-                      option(value="approved" selected=blog.approveStatus === 'approved') Approved
-                      option(value="rejected" selected=blog.approveStatus === 'rejected') Rejected
-                else
-                  span(class=`status-label ${blog.approveStatus}`) #{blog.approveStatus}
-              td #{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : 'N/A'}
-              td.actions-cell
-                .btn-group
-                  if user && user.role === 'admin'
-                    a.btn-edit(href=`/blogs/edit/${blog._id}`) Edit
-                  else
-                    a.btn-edit(href="#" onclick="alert('Access denied: You are not an admin'); return false;") Edit
-                  if user && user.role === 'admin'
-                    form(action=`/blogs/delete/${blog._id}` method="POST" onsubmit="return confirm('Are you sure?')")
-                      button.btn-delete(type="submit") Delete
-                  else
-                    button.btn-delete(type="button" onclick="alert('Access denied: You are not an admin')") Delete
+                    .story-cover.story-cover--empty
+                      if blog.media && blog.media.type === 'video'
+                        span.media-chip Video attached
+                      else
+                        span.cover-mark T
+                  .story-content
+                    .story-meta
+                      span.status-label.pending Pending review
+                      time(datetime=blog.createdAt ? blog.createdAt.toISOString() : '')= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'
+                    h3.story-title= blog.title
+                    p.story-description= blog.description
+                    .author-line
+                      span.author-avatar= blog.author ? (blog.author.firstname || 'A').charAt(0).toUpperCase() : 'A'
+                      span
+                        small Submitted by
+                        strong= blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'
+                    .card-actions
+                      form.status-form(action=`/blogs/status/${blog._id}` method='POST')
+                        label.visually-hidden(for=`status-${blog._id}`) Update status for #{blog.title}
+                        select(id=`status-${blog._id}` name='status' aria-label=`Status for ${blog.title}`)
+                          option(value='pending' selected=blog.approveStatus === 'pending') Pending
+                          option(value='approved') Approve
+                          option(value='rejected') Reject
+                        button.btn.btn-review(type='submit') Update status
+                      a.btn-text(href=`/blogs/edit/${blog._id}`) Edit story
+          else
+            .empty-state
+              span.empty-icon
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  path(d='m5 12 4 4L19 6')
+              h3 All caught up
+              p There are no stories waiting for approval right now.
+
+        section.story-section.reviewed-section(aria-labelledby='reviewed-heading')
+          .section-heading
+            div
+              p.section-kicker HISTORY
+              h2#reviewed-heading Reviewed stories
+            span.section-count= reviewedBlogs.length
+          if reviewedBlogs.length
+            .reviewed-list
+              each blog in reviewedBlogs
+                article.reviewed-card
+                  .reviewed-main
+                    span.status-label(class=blog.approveStatus)= blog.approveStatus
+                    div
+                      h3.story-title= blog.title
+                      p.reviewed-by
+                        | #{blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'}
+                        |  · #{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'}
+                  form.status-form.status-form--compact(action=`/blogs/status/${blog._id}` method='POST')
+                    label.visually-hidden(for=`reviewed-status-${blog._id}`) Update status for #{blog.title}
+                    select(id=`reviewed-status-${blog._id}` name='status' aria-label=`Status for ${blog.title}`)
+                      option(value='pending') Pending
+                      option(value='approved' selected=blog.approveStatus === 'approved') Approved
+                      option(value='rejected' selected=blog.approveStatus === 'rejected') Rejected
+                    button.btn.btn-review(type='submit') Update
+                  form.delete-form(action=`/blogs/delete/${blog._id}` method='POST' onsubmit="return confirm('Delete this story? This cannot be undone.')")
+                    button.btn-delete(type='submit' aria-label=`Delete ${blog.title}`) Delete
+          else
+            p.subtle-empty No reviewed stories yet.
+      else
+        section.story-section(aria-labelledby='submissions-heading')
+          .section-heading
+            div
+              p.section-kicker SUBMISSION HISTORY
+              h2#submissions-heading Your submissions
+            span.section-count= dbBlogs.length
+          if dbBlogs.length
+            .reviewed-list
+              each blog in dbBlogs
+                article.reviewed-card
+                  .reviewed-main
+                    span.status-label(class=blog.approveStatus)= blog.approveStatus
+                    div
+                      h3.story-title= blog.title
+                      p.reviewed-by= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'
+                  if blog.approveStatus === 'rejected'
+                    a.btn-text(href='/blogform') Submit a new story
+          else
+            .empty-state
+              span.empty-icon
+                svg(viewBox='0 0 24 24' aria-hidden='true')
+                  path(d='M12 5v14M5 12h14')
+              h3 Your next story starts here
+              p You have not submitted a story yet. When you do, its review status will appear here.
+              a.btn.btn-primary(href='/blogform') Write your first story
