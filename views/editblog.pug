@@ -1,29 +1,56 @@
 doctype html
-html
+html(lang='en')
   head
-    title Edit Blog | Blog-Master-Pro
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    meta(name='description' content='Edit a Telesora story submission.')
+    title Telesora | Edit story
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
     link(rel='stylesheet' href='/css/dashboard.css')
-  body
-    .container
-      a.home-link(href='/index') ← Home
-      h1 Edit  your Blog 
-      form(action=`/blogs/update/${blog._id}` method="post")
-        .form-group
-          label(for="title") Title
-          input#title(type="text" name="title" value=blog.title required)
-        
-        .form-group
-          label(for="description") Description
-          textarea#description(name="description" rows="10" required) #{blog.description}
+  body.dashboard-body.edit-body
+    nav.navbar
+      .nav-container
+        a.nav-logo(href='/index')
+          img(src='/images/telesora-logo-sm.png' alt='' width='38' height='26')
+          span Telesora
+        ul.nav-links
+          li
+            a(href='/index') Home
+          li
+            a(href='/stories') Stories
+          li
+            a(href='/dashboard') Dashboard
+          li
+            a.logout-link(href='/logout') Log out
+
+    main.edit-page
+      a.edit-back(href='/dashboard')
+        svg(viewBox='0 0 24 24' aria-hidden='true')
+          path(d='M19 12H5')
+          path(d='m12 19-7-7 7-7')
+        span Back to dashboard
+
+      header.edit-header
+        p.eyebrow STORY EDITOR
+        h1 Edit your story
+        p Refine your submission before it is approved and published.
+
+      form.edit-card(action=`/blogs/update/${blog._id}` method='post')
+        .edit-field
+          label(for='title') Story title
+          input#title(type='text' name='title' value=blog.title required maxlength='160' placeholder='Give your story a title')
+        .edit-field
+          label(for='description') Story
+          textarea#description(name='description' rows='12' required placeholder='Write your story...')= blog.description
 
         if blog.media && blog.media.url
-          .form-group
-            label Attached media
+          .edit-field
+            span.edit-label Attached media
             if blog.media.type === 'video'
               video.edit-media(src=blog.media.url controls preload='metadata')
             else
-              img.edit-media(src=blog.media.url alt='Attached image')
-        
-        .actions
-          button.btn(type="submit") Save Changes
-          a.btn.logout(href="/dashboard") Cancel
+              img.edit-media(src=blog.media.url alt='Attached story image')
+
+        .edit-actions
+          a.btn-cancel(href='/dashboard') Cancel
+          button.btn.btn-primary(type='submit') Save changes

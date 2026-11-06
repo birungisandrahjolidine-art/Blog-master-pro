@@ -57,6 +57,48 @@ html(lang='en')
           span.stat-note= user && user.role === 'admin' ? 'Not approved' : 'Review your story'
 
       if user && user.role === 'admin'
+        section.story-section.reviewed-section(aria-labelledby='reviewed-heading')
+          .section-heading
+            div
+              p.section-kicker HISTORY
+              h2#reviewed-heading Reviewed stories
+            span.section-count= reviewedBlogs.length
+          if reviewedBlogs.length
+            .reviewed-grid
+              each blog in reviewedBlogs
+                article.reviewed-card(class=`reviewed-card--${blog.approveStatus}`)
+                  .reviewed-top
+                    span.status-label(class=blog.approveStatus)= blog.approveStatus
+                    time.reviewed-date(datetime=blog.createdAt ? blog.createdAt.toISOString() : '')= blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'
+                  h3.story-title.reviewed-title= blog.title
+                  p.reviewed-excerpt= blog.description
+                  .reviewed-author
+                    span.author-avatar= blog.author ? (blog.author.firstname || 'A').charAt(0).toUpperCase() : 'A'
+                    span
+                      small By
+                      strong= blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'
+                  .reviewed-actions
+                    form.status-form.status-form--compact(action=`/blogs/status/${blog._id}` method='POST')
+                      .status-dropdown
+                        button.btn.btn-review.status-toggle(type='button' aria-haspopup='menu' aria-expanded='false' aria-label=`Change status for ${blog.title}`)
+                          span= blog.approveStatus === 'approved' ? 'Approved' : blog.approveStatus === 'rejected' ? 'Rejected' : 'Pending'
+                          svg(viewBox='0 0 24 24' aria-hidden='true')
+                            path(d='m6 9 6 6 6-6')
+                        .status-menu.status-menu--end(role='menu' aria-label=`Change status for ${blog.title}`)
+                          button.status-option(type='submit' name='status' value='approved' role='menuitem')
+                            span.option-dot(aria-hidden='true')
+                            span Approve
+                          button.status-option(type='submit' name='status' value='rejected' role='menuitem')
+                            span.option-dot(aria-hidden='true')
+                            span Reject
+                          button.status-option(type='submit' name='status' value='pending' role='menuitem')
+                            span.option-dot(aria-hidden='true')
+                            span Keep pending
+                    form.delete-form(action=`/blogs/delete/${blog._id}` method='POST' onsubmit="return confirm('Delete this story? This cannot be undone.')")
+                      button.btn-delete(type='submit' aria-label=`Delete ${blog.title}`) Delete
+          else
+            p.subtle-empty No reviewed stories yet.
+
         section.story-section(aria-labelledby='pending-heading')
           .section-heading
             div
@@ -89,12 +131,21 @@ html(lang='en')
                         strong= blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'
                     .card-actions
                       form.status-form(action=`/blogs/status/${blog._id}` method='POST')
-                        label.visually-hidden(for=`status-${blog._id}`) Update status for #{blog.title}
-                        select(id=`status-${blog._id}` name='status' aria-label=`Status for ${blog.title}`)
-                          option(value='pending' selected=blog.approveStatus === 'pending') Pending
-                          option(value='approved') Approve
-                          option(value='rejected') Reject
-                        button.btn.btn-review(type='submit') Update status
+                        .status-dropdown
+                          button.btn.btn-review.status-toggle(type='button' aria-haspopup='menu' aria-expanded='false' aria-label=`Update status for ${blog.title}`)
+                            span Update status
+                            svg(viewBox='0 0 24 24' aria-hidden='true')
+                              path(d='m6 9 6 6 6-6')
+                          .status-menu(role='menu' aria-label=`Change status for ${blog.title}`)
+                            button.status-option(type='submit' name='status' value='approved' role='menuitem')
+                              span.option-dot(aria-hidden='true')
+                              span Approve
+                            button.status-option(type='submit' name='status' value='rejected' role='menuitem')
+                              span.option-dot(aria-hidden='true')
+                              span Reject
+                            button.status-option(type='submit' name='status' value='pending' role='menuitem')
+                              span.option-dot(aria-hidden='true')
+                              span Keep pending
                       a.btn-text(href=`/blogs/edit/${blog._id}`) Edit story
           else
             .empty-state
@@ -103,35 +154,6 @@ html(lang='en')
                   path(d='m5 12 4 4L19 6')
               h3 All caught up
               p There are no stories waiting for approval right now.
-
-        section.story-section.reviewed-section(aria-labelledby='reviewed-heading')
-          .section-heading
-            div
-              p.section-kicker HISTORY
-              h2#reviewed-heading Reviewed stories
-            span.section-count= reviewedBlogs.length
-          if reviewedBlogs.length
-            .reviewed-list
-              each blog in reviewedBlogs
-                article.reviewed-card
-                  .reviewed-main
-                    span.status-label(class=blog.approveStatus)= blog.approveStatus
-                    div
-                      h3.story-title= blog.title
-                      p.reviewed-by
-                        | #{blog.author ? `${blog.author.firstname} ${blog.author.lastname}`.trim() : 'Unknown author'}
-                        |  · #{blog.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable'}
-                  form.status-form.status-form--compact(action=`/blogs/status/${blog._id}` method='POST')
-                    label.visually-hidden(for=`reviewed-status-${blog._id}`) Update status for #{blog.title}
-                    select(id=`reviewed-status-${blog._id}` name='status' aria-label=`Status for ${blog.title}`)
-                      option(value='pending') Pending
-                      option(value='approved' selected=blog.approveStatus === 'approved') Approved
-                      option(value='rejected' selected=blog.approveStatus === 'rejected') Rejected
-                    button.btn.btn-review(type='submit') Update
-                  form.delete-form(action=`/blogs/delete/${blog._id}` method='POST' onsubmit="return confirm('Delete this story? This cannot be undone.')")
-                    button.btn-delete(type='submit' aria-label=`Delete ${blog.title}`) Delete
-          else
-            p.subtle-empty No reviewed stories yet.
       else
         section.story-section(aria-labelledby='submissions-heading')
           .section-heading
@@ -158,3 +180,40 @@ html(lang='en')
               h3 Your next story starts here
               p You have not submitted a story yet. When you do, its review status will appear here.
               a.btn.btn-primary(href='/blogform') Write your first story
+
+    script.
+      (function () {
+        const closeDropdowns = (except) => {
+          document.querySelectorAll('.status-dropdown.is-open').forEach((dropdown) => {
+            if (dropdown === except) return;
+            dropdown.classList.remove('is-open');
+            const toggle = dropdown.querySelector('.status-toggle');
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          });
+        };
+
+        document.querySelectorAll('.status-dropdown').forEach((dropdown) => {
+          const toggle = dropdown.querySelector('.status-toggle');
+          const menu = dropdown.querySelector('.status-menu');
+          if (!toggle || !menu) return;
+
+          toggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isOpen = dropdown.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            closeDropdowns(dropdown);
+          });
+
+          menu.addEventListener('click', (event) => event.stopPropagation());
+
+          dropdown.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              dropdown.classList.remove('is-open');
+              toggle.setAttribute('aria-expanded', 'false');
+              toggle.focus();
+            }
+          });
+        });
+
+        document.addEventListener('click', () => closeDropdowns());
+      })();
