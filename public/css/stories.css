@@ -1,4 +1,4 @@
-/* Stories page — builds on the tokens and shell from index.css */
+/* Stories page — card grid using the home page design tokens from index.css */
 
 .nav-link--active {
     color: var(--text);
@@ -8,181 +8,236 @@
 .stories-page {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: clamp(28px, 5vh, 56px) 24px clamp(56px, 9vh, 96px);
+    padding: clamp(20px, 3vw, 40px) clamp(14px, 2vw, 24px) clamp(44px, 6vw, 80px);
+}
+
+.stories-shell {
+    padding: clamp(18px, 2.6vw, 32px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: clamp(18px, 2.4vw, 24px);
+    box-shadow: 0 30px 70px -46px rgba(0, 0, 0, 0.9);
 }
 
 .stories-head {
-    max-width: 620px;
-    margin: 0 auto;
-    text-align: center;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: clamp(18px, 2.4vw, 28px);
 }
 
 .stories-title {
-    font-size: clamp(1.7rem, 3.8vw, 2.7rem);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.5rem, 3.2vw, 2.2rem);
     font-weight: 800;
-}
-
-.stories-title .gradient {
-    margin-left: 0.35ch;
-}
-
-.stories-copy {
-    margin-top: 14px;
-    font-size: clamp(0.9rem, 1.3vw, 1rem);
-    color: var(--muted);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
 }
 
 .stories-count {
-    margin: 40px 0 16px;
-    font-size: 11.5px;
+    font-size: clamp(11.5px, 1.2vw, 13px);
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--accent);
+    white-space: nowrap;
 }
 
 .story-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: clamp(16px, 1.8vw, 22px);
 }
 
+/* CARD */
 .story-card {
     display: flex;
     flex-direction: column;
-    padding: 26px;
-    background: var(--surface);
+    padding: 12px 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
+    border-radius: 20px;
     transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 }
 
+.story-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(0, 230, 230, 0.35);
+}
+
+/* MEDIA + OVERLAPPING TAG */
 .story-media {
-    margin: -26px -26px 18px;
-    background: #0b1220;
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .story-media-el {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     object-fit: cover;
+    border-radius: 14px;
     background: #0b1220;
 }
 
-.story-body-wrap {
+.story-media--empty {
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: linear-gradient(135deg, rgba(0, 230, 230, 0.16), rgba(79, 140, 255, 0.18));
+    border: 1px solid rgba(0, 230, 230, 0.22);
+}
+
+.story-tag {
+    position: absolute;
+    top: -11px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+    padding: 6px 13px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #06121c;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 10px 22px -12px rgba(0, 230, 230, 0.9);
+}
+
+/* BODY */
+.story-card-body {
     display: flex;
     flex: 1;
     flex-direction: column;
-    min-height: 0;
-}
-
-.story-card:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(0, 230, 230, 0.35);
-}
-
-.story-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-}
-
-.story-badge {
-    padding: 3px 10px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(0, 230, 230, 0.1);
-    border: 1px solid rgba(0, 230, 230, 0.28);
-    border-radius: 999px;
-}
-
-.story-date {
-    font-size: 12px;
-    color: var(--muted);
+    padding: 0 6px;
 }
 
 .story-title {
-    font-size: 1.15rem;
-    line-height: 1.35;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-size: clamp(0.98rem, 1.15vw, 1.06rem);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text);
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.story-body {
+.story-link {
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.story-link:hover {
+    color: var(--accent);
+}
+
+.story-excerpt {
     flex: 1;
-    font-size: 14.5px;
+    margin-bottom: 16px;
+    font-size: 13.5px;
+    line-height: 1.65;
     color: var(--muted);
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .story-meta {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
-    margin-top: 20px;
-    padding-top: 16px;
+    margin-bottom: 14px;
+    padding-top: 13px;
     border-top: 1px solid var(--border);
-    font-size: 13px;
+    font-size: 11.5px;
+    font-weight: 500;
     color: var(--muted);
 }
 
-.story-avatar {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
+.story-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.story-meta-item svg {
+    width: 14px;
+    height: 14px;
     flex: 0 0 auto;
-    border-radius: 50%;
-    font-size: 11.5px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.story-more {
+    display: block;
+    padding: 9px 18px;
+    font-size: 12.5px;
     font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #06121c;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-}
-
-.story-author {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.stories-empty {
-    max-width: 460px;
-    margin: 48px auto 0;
-    padding: 40px 28px;
     text-align: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    color: var(--accent);
+    background: transparent;
+    border: 1.5px solid rgba(0, 230, 230, 0.45);
+    border-radius: 999px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.stories-empty .card-icon {
-    margin: 0 auto 18px;
+.story-more:hover {
+    color: #06121c;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* EMPTY STATE */
+.stories-empty {
+    max-width: 440px;
+    margin: clamp(24px, 4vw, 48px) auto clamp(8px, 2vw, 24px);
+    text-align: center;
 }
 
 .stories-empty h2 {
-    font-size: 1.2rem;
     margin-bottom: 8px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text);
 }
 
 .stories-empty p {
-    font-size: 14.5px;
-    color: var(--muted);
     margin-bottom: 22px;
+    font-size: 14px;
+    color: var(--muted);
 }
 
 @media (max-width: 600px) {
     .stories-page {
-        padding: 28px 20px 64px;
+        padding: 0 12px 56px;
+    }
+
+    .stories-shell {
+        padding: 18px 14px 24px;
+    }
+
+    .stories-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
     }
 
     .story-grid {

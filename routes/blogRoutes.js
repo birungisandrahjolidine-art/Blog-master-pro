@@ -1,10 +1,41 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Blog = require('../models/blog');
 
 const {isAuthenticated,isAdmin, isUser} = require('../middleware/auth');
 const {uploadMedia, toMediaPayload, removeUpload} = require('../middleware/upload');
+
+// Rough reading estimate — average adult reads ~200 words per minute
+const readingTime = (text) => {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+    return `${Math.max(1, Math.ceil(words / 200))} min read`;
+};
+
+// Shapes a blog document into the plain object the story views use
+const toStoryView = (blog) => {
+    const firstname = (blog.author && blog.author.firstname) || '';
+    const lastname = (blog.author && blog.author.lastname) || '';
+    const title = (blog.title || '').trim() || 'Untitled story';
+
+    return {
+        id: blog._id.toString(),
+        title,
+        category: title,
+        description: blog.description,
+        excerpt: String(blog.description || '').replace(/\s+/g, ' ').trim(),
+        readTime: readingTime(blog.description),
+        authorName: `${firstname} ${lastname}`.trim() || 'Anonymous',
+        initials: (firstname.charAt(0) + lastname.charAt(0)).toUpperCase() || 'A',
+        date: blog.createdAt
+            ? blog.createdAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+            : '',
+        isoDate: blog.createdAt ? blog.createdAt.toISOString() : '',
+        mediaUrl: blog.media && blog.media.url ? blog.media.url : null,
+        mediaType: blog.media && blog.media.type ? blog.media.type : null
+    };
+};
 
 
 // VIEW BLOGS
@@ -48,29 +79,35 @@ router.get('/stories', async (req, res) => {
             .populate('author', 'firstname lastname')
             .sort({ createdAt: -1 });
 
-        const stories = dbStories.map((blog) => {
-            const firstname = (blog.author && blog.author.firstname) || '';
-            const lastname = (blog.author && blog.author.lastname) || '';
-            const authorName = `${firstname} ${lastname}`.trim() || 'Anonymous';
-
-            return {
-                id: blog._id.toString(),
-                title: blog.title,
-                description: blog.description,
-                authorName,
-                initials: (firstname.charAt(0) + lastname.charAt(0)).toUpperCase() || 'A',
-                date: blog.createdAt
-                    ? blog.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                    : '',
-                mediaUrl: blog.media && blog.media.url ? blog.media.url : null,
-                mediaType: blog.media && blog.media.type ? blog.media.type : null
-            };
-        });
+        const stories = dbStories.map(toStoryView);
 
         res.render('stories', { stories });
     } catch (error) {
         console.log(error);
         res.render('stories', { stories: [] });
+    }
+});
+
+// PUBLIC SINGLE STORY (approved only)
+router.get('/stories/:id', async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(404).render('story', { story: null });
+    }
+
+    try {
+        const blog = await Blog.findOne({
+            _id: req.params.id,
+            approveStatus: 'approved'
+        }).populate('author', 'firstname lastname');
+
+        if (!blog) {
+            return res.status(404).render('story', { story: null });
+        }
+
+        res.render('story', { story: toStoryView(blog) });
+    } catch (error) {
+        console.log(error);
+        res.status(500).render('story', { story: null });
     }
 });
 

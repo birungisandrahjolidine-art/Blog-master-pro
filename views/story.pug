@@ -1,0 +1,77 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    if story
+      meta(name='description' content=story.description)
+      title= `${story.title} | Telesora`
+    else
+      title Story not found | Telesora
+    link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    link(rel='stylesheet' href='/css/index.css')
+    link(rel='stylesheet' href='/css/story.css')
+  body
+    header.site-header
+      nav.nav
+        a.brand(href='/index')
+          img.brand-logo(src='/images/telesora-logo-sm.png' alt='Telesora logo' width='48' height='32')
+          span.brand-text Telesora
+        .nav-links
+          a.nav-link(href='/stories') Stories
+          if user
+            a.nav-link(href='/dashboard') Dashboard
+          else
+            a.nav-link(href='/login') Login
+          a.nav-link.nav-link--primary(href='/register') Get started
+
+    main.story-page
+      if story
+        a.story-back(href='/stories')
+          span.icon-back(aria-hidden='true') ←
+          | All stories
+
+        article.story-article
+          header.story-head
+            span.story-badge Published
+            h1.story-title= story.title
+            .story-byline
+              span.story-avatar(aria-hidden='true')= story.initials
+              div
+                span.story-author= story.authorName
+                time.story-date(datetime=story.date)= story.date
+
+          if story.mediaUrl
+            figure.story-figure
+              if story.mediaType === 'video'
+                video.story-media(src=story.mediaUrl controls preload='metadata' playsinline)
+              else
+                img.story-media(src=story.mediaUrl alt=`Image for ${story.title}`)
+              figcaption.story-caption
+                | Attached #{story.mediaType === 'video' ? 'video' : 'image'} by #{story.authorName}
+
+          .story-content
+            p= story.description
+
+        .story-end
+          .story-end-rule
+          p.story-end-note Thanks for reading.
+          .story-end-actions
+            a.btn.btn--ghost(href='/stories') Read more stories
+            a.btn.btn--primary(href='/register') Write your own
+      else
+        .story-missing
+          h1 Story not found
+          p
+            | This story may have been removed, or it hasn't been approved
+            | for publishing yet.
+          a.btn.btn--primary(href='/stories') Back to stories
+
+    footer.site-footer
+      .footer-inner
+        span © #{new Date().getFullYear()} Telesora
+        .footer-links
+          a(href='/index') Home
+          a(href='/stories') Stories
+          a(href='/login') Login
+          a(href='/register') Register

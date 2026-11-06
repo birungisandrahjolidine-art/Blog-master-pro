@@ -23,46 +23,49 @@ html(lang='en')
           a.nav-link.nav-link--primary(href='/register') Get started
 
     main.stories-page
-      section.stories-head
-        p.eyebrow Published on Telesora
-        h1.stories-title
-          | Stories from our
-          span.gradient  writers
-        p.stories-copy
-          | Every story below was reviewed and approved by a Telesora editor
-          | before it appeared here.
+      section.stories-shell
+        header.stories-head
+          h1.stories-title Blog
+          if stories.length
+            span.stories-count
+              | View All · #{stories.length} #{stories.length === 1 ? 'story' : 'stories'}
 
-      if stories.length
-        p.stories-count #{stories.length} published #{stories.length === 1 ? 'story' : 'stories'}
-        .story-grid
-          each story in stories
-            article.story-card
-              if story.mediaUrl
+        if stories.length
+          .story-grid
+            each story in stories
+              article.story-card
                 .story-media
-                  if story.mediaType === 'video'
-                    video.story-media-el(src=story.mediaUrl controls preload='metadata' playsinline)
-                  else
+                  if story.mediaUrl && story.mediaType === 'video'
+                    video.story-media-el(src=story.mediaUrl muted playsinline preload='metadata')
+                  else if story.mediaUrl
                     img.story-media-el(src=story.mediaUrl alt=`Image for ${story.title}` loading='lazy')
-              .story-body-wrap
-                .story-top
-                  span.story-badge Published
-                  time.story-date(datetime=story.date)= story.date
-                h2.story-title= story.title
-                p.story-body= story.description
-                .story-meta
-                  span.story-avatar(aria-hidden='true')= story.initials
-                  span.story-author= story.authorName
-      else
-        .stories-empty
-          .card-icon
-            svg(viewBox='0 0 24 24' aria-hidden='true')
-              path(d='M12 20h9')
-              path(d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z')
-          h2 No stories published yet
-          p
-            | Approved stories will appear here. Be the first writer to
-            | get one published.
-          a.btn.btn--primary(href='/register') Start writing
+                  else
+                    .story-media-el.story-media--empty
+                      span= story.initials
+                  span.story-tag(title=story.category)= story.category
+                .story-card-body
+                  h2.story-title
+                    a.story-link(href=`/stories/${story.id}`)= story.title
+                  p.story-excerpt= story.excerpt
+                  .story-meta
+                    span.story-meta-item
+                      svg(viewBox='0 0 24 24' aria-hidden='true')
+                        rect(x='3' y='4.5' width='18' height='16' rx='2.5')
+                        path(d='M3 9.5h18M8 2.8v3.4M16 2.8v3.4')
+                      time(datetime=story.isoDate)= story.date
+                    span.story-meta-item
+                      svg(viewBox='0 0 24 24' aria-hidden='true')
+                        circle(cx='12' cy='12' r='8.5')
+                        path(d='M12 7.4V12l3.1 1.9')
+                      span= story.readTime
+                  a.story-more(href=`/stories/${story.id}`) Read More
+        else
+          .stories-empty
+            h2 No stories published yet
+            p
+              | Approved stories will appear here. Be the first writer to
+              | get one published.
+            a.btn.btn--primary(href='/register') Start writing
 
     footer.site-footer
       .footer-inner
