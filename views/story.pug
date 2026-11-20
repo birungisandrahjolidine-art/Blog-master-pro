@@ -4,10 +4,10 @@ html(lang='en')
     meta(charset='UTF-8')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
     if story
-      meta(name='description' content=story.description)
-      title= `${story.title} | Telesora`
+      meta(name='description' content=(story.excerpt || story.description))
+      title= `${story.title} — read on Telesora`
     else
-      title Story not found | Telesora
+      title= 'Story not found | Telesora'
     link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
     include partials/theme-boot.pug
     link(rel='stylesheet' href='/css/index.css')
@@ -34,45 +34,60 @@ html(lang='en')
 
     main.story-page
       if story
+        - const paragraphs = String(story.description || '').split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+        - const hasLede = paragraphs.length > 1;
+        - const mediaLabel = story.mediaType === 'video' ? 'Video' : 'Photograph';
+
         a.story-back(href='/stories')
           span.icon-back(aria-hidden='true') ←
-          | All stories
+          | Back to all stories
 
         article.story-article
           header.story-head
-            span.story-badge Published
+            .story-chips
+              span.story-badge Published
+              if story.readTime
+                span.story-chip= story.readTime
             h1.story-title= story.title
             .story-byline
               span.story-avatar(aria-hidden='true')= story.initials
-              div
-                span.story-author= story.authorName
-                time.story-date(datetime=story.date)= story.date
+              .story-byline-copy
+                span.story-author= `By ${story.authorName}`
+                span.story-byline-meta
+                  time.story-date(datetime=(story.isoDate || story.date))= story.date
+                  if story.readTime
+                    span.story-sep(aria-hidden='true') ·
+                    span.story-readtime= story.readTime
 
           if story.mediaUrl
             figure.story-figure
               if story.mediaType === 'video'
                 video.story-media(src=story.mediaUrl controls preload='metadata' playsinline)
               else
-                img.story-media(src=story.mediaUrl alt=`Image for ${story.title}`)
-              figcaption.story-caption
-                | Attached #{story.mediaType === 'video' ? 'video' : 'image'} by #{story.authorName}
+                img.story-media(src=story.mediaUrl alt=`${mediaLabel} accompanying the story "${story.title}"`)
+              figcaption.story-caption #{mediaLabel} by #{story.authorName}
 
           .story-content
-            p= story.description
+            each paragraph, index in paragraphs
+              p(class=(hasLede && index === 0 ? 'story-lede' : null))= paragraph
 
         .story-end
           .story-end-rule
-          p.story-end-note Thanks for reading.
+          p.story-end-kicker End of story
+          p.story-end-note Thanks for reading. There is plenty more writing from the Telesora community waiting for you.
           .story-end-actions
-            a.btn.btn--ghost(href='/stories') Read more stories
-            a.btn.btn--primary(href='/register') Write your own
+            a.btn.btn--ghost(href='/stories') Browse more stories
+            a.btn.btn--primary(href=user ? '/blogform' : '/register')= user ? 'Write your own story' : 'Start writing'
       else
         .story-missing
-          h1 Story not found
+          span.story-missing-code 404
+          h1 We couldn't find that story
           p
-            | This story may have been removed, or it hasn't been approved
-            | for publishing yet.
-          a.btn.btn--primary(href='/stories') Back to stories
+            | The link may be broken, or this story hasn't been published yet.
+            | Try the story library instead.
+          .story-missing-actions
+            a.btn.btn--primary(href='/stories') Browse all stories
+            a.btn.btn--ghost(href='/index') Go to homepage
 
     footer.site-footer
       .footer-inner

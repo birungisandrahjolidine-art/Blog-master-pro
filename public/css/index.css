@@ -543,6 +543,20 @@ a {
     color: #ffffff;
 }
 
+[data-theme='light'] .btn--primary {
+    background: linear-gradient(135deg, #06727a, #1d4ed8);
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(10, 143, 153, 0.22);
+}
+
+[data-theme='light'] .btn--ghost {
+    background: rgba(15, 23, 42, 0.045);
+}
+
+[data-theme='light'] .site-footer {
+    background: rgba(255, 255, 255, 0.75);
+}
+
 @media (max-width: 900px) {
     .nav-user-role {
         display: none;
