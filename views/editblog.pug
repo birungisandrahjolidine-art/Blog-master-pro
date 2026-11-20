@@ -6,22 +6,28 @@ html(lang='en')
     meta(name='description' content='Edit a Telesora story submission.')
     title Telesora | Edit story
     link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    include partials/theme-boot.pug
     link(rel='stylesheet' href='/css/dashboard.css')
+    link(rel='stylesheet' href='/css/notify.css')
+    script(src='/js/theme.js' defer)
+    script(src='/js/notifications.js' defer)
   body.dashboard-body.edit-body
     nav.navbar
       .nav-container
         a.nav-logo(href='/index')
           img(src='/images/telesora-logo-sm.png' alt='' width='38' height='26')
           span Telesora
-        ul.nav-links
-          li
-            a(href='/index') Home
-          li
-            a(href='/stories') Stories
-          li
-            a(href='/dashboard') Dashboard
-          li
-            a.logout-link(href='/logout') Log out
+        .nav-right
+          ul.nav-links
+            li
+              a(href='/index') Home
+            li
+              a(href='/stories') Stories
+            li
+              a(href='/dashboard') Dashboard
+            li
+              a.logout-link(href='/logout') Log out
+          include partials/nav-actions.pug
 
     main.edit-page
       a.edit-back(href='/dashboard')

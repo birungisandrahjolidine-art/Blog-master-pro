@@ -1,0 +1,9 @@
+//- Applies the saved theme before first paint so the page never flashes.
+script.
+  (function () {
+    try {
+      if (localStorage.getItem('telesora-theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    } catch (error) {}
+  })();

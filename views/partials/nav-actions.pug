@@ -1,0 +1,43 @@
+//- Shared right-hand navbar cluster: signed-in identity, review alerts, theme toggle.
+//- Requires `user` (may be null); safe when the local is missing entirely.
+-
+  const navAccount = (typeof user !== 'undefined' && user) ? user : null
+  const navAccountName = navAccount
+    ? ([navAccount.firstname, navAccount.lastname].filter(Boolean).join(' ').trim() || navAccount.username || 'Story writer')
+    : 'Story writer'
+  const navAccountParts = navAccountName.split(' ').filter(Boolean)
+  const navAccountInitials = (
+    (navAccountParts[0] || 'T').charAt(0) +
+    (navAccountParts.length > 1 ? navAccountParts[navAccountParts.length - 1].charAt(0) : '')
+  ).toUpperCase()
+  const navAccountIsAdmin = Boolean(navAccount && navAccount.role === 'admin')
+
+if navAccount
+  .nav-user(title='Signed in as ' + navAccountName)
+    span.nav-user-avatar(aria-hidden='true')= navAccountInitials
+    span.nav-user-copy
+      span.visually-hidden Signed in as
+      span.nav-user-name= navAccountName
+      span.nav-user-role(class=navAccountIsAdmin ? 'is-admin' : 'is-author')= navAccountIsAdmin ? 'Administrator' : 'Story writer'
+
+if navAccountIsAdmin
+  .nav-notify#nav-notify
+    button.nav-notify-btn#nav-notify-btn(type='button' aria-expanded='false' aria-controls='nav-notify-panel' aria-haspopup='true' aria-label='Review notifications')
+      svg(viewBox='0 0 24 24' aria-hidden='true')
+        path(d='M18.2 8.9a6.2 6.2 0 1 0-12.4 0c0 5.1-2.1 6.5-2.1 6.5h16.6s-2.1-1.4-2.1-6.5Z')
+        path(d='M13.7 19.1a2 2 0 0 1-3.4 0')
+      span.nav-notify-badge#nav-notify-badge(hidden) 0
+    .nav-notify-panel#nav-notify-panel(role='dialog' aria-label='Stories waiting for review' hidden)
+      .nav-notify-head
+        span.nav-notify-title Review queue
+        span.nav-notify-meta#nav-notify-meta
+      ul.nav-notify-list#nav-notify-list
+      p.nav-notify-empty#nav-notify-empty(hidden) Nothing waiting. Every story is reviewed.
+      a.nav-notify-foot(href='/dashboard#pending-heading') Open the moderation queue
+
+button.theme-toggle#theme-toggle(type='button' aria-label='Switch to light theme' aria-pressed='false' title='Switch between light and dark')
+  svg.theme-icon.theme-icon--sun(viewBox='0 0 24 24' aria-hidden='true')
+    circle(cx='12' cy='12' r='4.1')
+    path(d='M12 2.4v2.2M12 19.4v2.2M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.4 12h2.2M19.4 12h2.2M4.4 19.6 6 18M18 6l1.6-1.6')
+  svg.theme-icon.theme-icon--moon(viewBox='0 0 24 24' aria-hidden='true')
+    path(d='M20.6 13.3A8.6 8.6 0 1 1 10.7 3.4a6.7 6.7 0 0 0 9.9 9.9Z')

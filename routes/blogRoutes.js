@@ -141,6 +141,40 @@ router.get('/stories/:id', async (req, res) => {
     }
 });
 
+// ADMIN REVIEW NOTIFICATIONS - polled by the navbar bell
+router.get('/notifications/pending', isAdmin, async (req, res) => {
+    try {
+        const [pending, count] = await Promise.all([
+            Blog.find({ approveStatus: 'pending' })
+                .populate('author', 'firstname lastname')
+                .sort({ createdAt: -1 })
+                .limit(6)
+                .lean(),
+            Blog.countDocuments({ approveStatus: 'pending' })
+        ]);
+
+        res.json({
+            count,
+            items: pending.map((blog) => {
+                const firstname = (blog.author && blog.author.firstname) || '';
+                const lastname = (blog.author && blog.author.lastname) || '';
+                return {
+                    id: blog._id.toString(),
+                    title: (blog.title || '').trim() || 'Untitled story',
+                    author: `${firstname} ${lastname}`.trim() || 'Anonymous',
+                    createdAt: blog.createdAt ? new Date(blog.createdAt).toISOString() : null,
+                    media: blog.media && blog.media.url
+                        ? (blog.media.type === 'video' ? 'video' : 'image')
+                        : 'none'
+                };
+            })
+        });
+    } catch (error) {
+        console.error('Error loading review notifications:', error);
+        res.status(500).json({ count: 0, items: [], error: 'Could not load review notifications.' });
+    }
+});
+
 router.get('/dashboard', isAuthenticated, async (req, res) => {
     const isAdminUser = req.user.role === 'admin';
     const emptyDashboard = {

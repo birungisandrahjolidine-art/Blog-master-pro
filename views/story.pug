@@ -9,22 +9,28 @@ html(lang='en')
     else
       title Story not found | Telesora
     link(rel='icon' type='image/png' href='/images/telesora-logo-sm.png')
+    include partials/theme-boot.pug
     link(rel='stylesheet' href='/css/index.css')
     link(rel='stylesheet' href='/css/story.css')
+    link(rel='stylesheet' href='/css/notify.css')
+    script(src='/js/theme.js' defer)
+    script(src='/js/notifications.js' defer)
   body
     header.site-header
       nav.nav
         a.brand(href='/index')
           img.brand-logo(src='/images/telesora-logo-sm.png' alt='Telesora logo' width='48' height='32')
           span.brand-text Telesora
-        .nav-links
-          a.nav-link(href='/index') Home
-          a.nav-link(href='/stories') Stories
-          if user
-            a.nav-link(href='/dashboard') Dashboard
-          else
-            a.nav-link(href='/login') Login
-          a.nav-link.nav-link--primary(href='/register') Get started
+        .nav-right
+          .nav-links
+            a.nav-link(href='/index') Home
+            a.nav-link(href='/stories') Stories
+            if user
+              a.nav-link(href='/dashboard') Dashboard
+            else
+              a.nav-link(href='/login') Login
+            a.nav-link.nav-link--primary(href=user ? '/blogform' : '/register')= user ? 'Write a story' : 'Get started'
+          include partials/nav-actions.pug
 
     main.story-page
       if story

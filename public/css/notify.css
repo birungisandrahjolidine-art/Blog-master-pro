@@ -1,0 +1,286 @@
+/* Review bell shared by the dashboard, the editor, and the public pages. */
+
+.nav-notify {
+    position: relative;
+    display: flex;
+    flex: none;
+}
+
+.nav-notify-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--panel-soft);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.nav-notify-btn:hover,
+.nav-notify.is-open .nav-notify-btn {
+    border-color: rgba(0, 230, 230, 0.34);
+    background: rgba(0, 230, 230, 0.1);
+    color: var(--text);
+}
+
+.nav-notify.has-items .nav-notify-btn {
+    color: var(--amber);
+}
+
+.nav-notify-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.nav-notify-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    display: grid;
+    place-items: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--amber);
+    box-shadow: 0 0 0 2px var(--bg);
+    color: #20160a;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.nav-notify-badge[hidden],
+.nav-notify-panel[hidden] {
+    display: none;
+}
+
+.nav-notify.has-items .nav-notify-badge {
+    animation: notify-pop 0.32s ease;
+}
+
+@keyframes notify-pop {
+    0% {
+        transform: scale(0.4);
+    }
+    60% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ------------------------------------------------------------- The panel */
+
+.nav-notify-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 80;
+    width: min(324px, calc(100vw - 32px));
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--panel, #141f34);
+    box-shadow: 0 22px 48px rgba(4, 10, 20, 0.42);
+}
+
+.nav-notify-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.nav-notify-title {
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.nav-notify-meta {
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.nav-notify-list {
+    max-height: 318px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.nav-notify-item + .nav-notify-item {
+    border-top: 1px solid var(--border);
+}
+
+.nav-notify-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    transition: background 0.16s ease;
+}
+
+.nav-notify-link:hover {
+    background: rgba(0, 230, 230, 0.08);
+}
+
+.nav-notify-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #65b8ff);
+    color: #081522;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.nav-notify-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.nav-notify-story {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-notify-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.nav-notify-chip {
+    padding: 1px 7px;
+    border: 1px solid rgba(255, 190, 92, 0.4);
+    border-radius: 999px;
+    color: var(--amber);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.nav-notify-empty {
+    margin: 0;
+    padding: 20px 14px;
+    color: var(--muted);
+    font-size: 12.5px;
+    text-align: center;
+}
+
+.nav-notify-foot {
+    display: block;
+    padding: 11px 14px;
+    border-top: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.nav-notify-foot:hover {
+    background: rgba(0, 230, 230, 0.08);
+}
+
+/* --------------------------------------------------- New story alert toast */
+
+.nav-toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 120;
+    display: grid;
+    gap: 3px;
+    width: min(340px, calc(100vw - 32px));
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    border-radius: 14px;
+    background: var(--panel, #141f34);
+    box-shadow: 0 20px 44px rgba(4, 10, 20, 0.45);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.nav-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nav-toast strong {
+    color: var(--amber);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.nav-toast span {
+    color: var(--text);
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.nav-toast a {
+    margin-top: 4px;
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .nav-notify-panel {
+        position: fixed;
+        top: 68px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+    }
+
+    .nav-toast {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        width: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-notify-badge,
+    .nav-toast {
+        animation: none;
+        transition: none;
+    }
+}
