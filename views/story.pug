@@ -30,7 +30,7 @@ html(lang='en')
               a.nav-link(href='/dashboard') Dashboard
             else
               a.nav-link(href='/login') Login
-            a.nav-link.nav-link--primary(href=user ? '/blogform' : '/register')= user ? 'Write a story' : 'Get started'
+            a.nav-link.nav-link--primary(href='/blogform') Write a story
           include partials/nav-actions.pug
 
     if story
@@ -90,7 +90,7 @@ html(lang='en')
                   span.story-readtime= story.readTime
           .story-end-actions
             a.btn.btn--ghost(href='/stories') Browse more stories
-            a.btn.btn--primary(href=user ? '/blogform' : '/register')= user ? 'Write your own story' : 'Start writing'
+            a.btn.btn--primary(href='/blogform') Write your own story
       else
         section.story-missing
           span.story-missing-code 404

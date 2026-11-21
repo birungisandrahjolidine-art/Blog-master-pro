@@ -25,7 +25,7 @@ html(lang='en')
               a.nav-link(href='/dashboard') Dashboard
             else
               a.nav-link(href='/login') Login
-            a.nav-link.nav-link--primary(href=user ? '/blogform' : '/register')= user ? 'Write a story' : 'Get started'
+            a.nav-link.nav-link--primary(href='/blogform') Write a story
           include partials/nav-actions.pug
 
     main

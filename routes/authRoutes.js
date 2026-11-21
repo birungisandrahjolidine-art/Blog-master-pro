@@ -1,7 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const User = require('../models/user'); 
+const User = require('../models/user');
+const { safeNext } = require('../middleware/auth');
+
+// Where to send the visitor once they are signed in.
+router.get('/login', (req, res) => {
+    res.render('login', {
+        next: safeNext(req.query.next),
+        error: req.query.error === '1'
+            ? 'That email and password combination did not work. Please try again.'
+            : null
+    });
+});
+
+router.post('/login', (req, res, next) => {
+    const target = safeNext(req.body.next);
+
+    passport.authenticate('local', (err, user) => {
+        if (err) return next(err);
+
+        if (!user) {
+            const retry = target ? `&next=${encodeURIComponent(target)}` : '';
+            return res.redirect(`/login?error=1${retry}`);
+        }
+
+        req.logIn(user, (loginErr) => {
+            if (loginErr) return next(loginErr);
+            if (target) return res.redirect(target);
+            if (req.user.role === 'admin' || req.user.role === 'user') {
+                return res.redirect('/dashboard');
+            }
+            return res.redirect('/index');
+        });
+    })(req, res, next);
+});
 
 router.get('/index', (req, res) => {
     res.render('index');
@@ -39,26 +72,5 @@ router.post('/register', async (req, res) => {
         });
     }
 });
-
-router.get('/login', (req, res) => {
-    res.render('login', {
-        error: req.query.error === '1'
-            ? 'That email and password combination did not work. Please try again.'
-            : null
-    });
-});
-
-router.post(
-    '/login',
-    passport.authenticate('local', { failureRedirect: '/login?error=1' }),
-    (req, res) => {
-        if (req.user.role === 'admin' || req.user.role === 'user') {
-            res.redirect('/dashboard');
-        } else {
-            res.redirect('/index');
-        }
-    }
-);
-
 
 module.exports = router;
